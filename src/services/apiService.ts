@@ -1,8 +1,8 @@
 import { fetchJson, fetchText } from './httpService';
 import { getApiUrl, getRefreshTimestampUrl, getStaticJsonUrl } from '../utils/paths';
 import type {
-    ApiEventGroupListResponse,
     ApiLocoResponse,
+    ApiSearchResponse,
     ApiTypeResponse,
     ApiTypesResponse
 } from '../types/api';
@@ -46,23 +46,16 @@ export const searchEventGroups = (
     endpoint: string,
     query: string,
     signal?: AbortSignal
-): Promise<ApiEventGroupListResponse> =>
-    fetchJson<ApiEventGroupListResponse>(
-        getApiUrl(`${endpoint}?query=${encodeURIComponent(query)}`),
-        { signal }
-    );
+): Promise<ApiSearchResponse> =>
+    fetchJson<ApiSearchResponse>(getApiUrl(`${endpoint}?query=${encodeURIComponent(query)}`), {
+        signal
+    });
 
-export const searchLocos = (
-    query: string,
-    signal?: AbortSignal
-): Promise<ApiEventGroupListResponse> => searchEventGroups('search_loco.php', query, signal);
+export const searchLocos = (query: string, signal?: AbortSignal): Promise<ApiSearchResponse> =>
+    searchEventGroups('search_loco.php', query, signal);
 
-export const searchPlaces = (
-    query: string,
-    signal?: AbortSignal
-): Promise<ApiEventGroupListResponse> => searchEventGroups('search_place.php', query, signal);
+export const searchPlaces = (query: string, signal?: AbortSignal): Promise<ApiSearchResponse> =>
+    searchEventGroups('search_place.php', query, signal);
 
-export const searchDates = (
-    query: string,
-    signal?: AbortSignal
-): Promise<ApiEventGroupListResponse> => searchEventGroups('search_date.php', query, signal);
+export const searchDates = (query: string, signal?: AbortSignal): Promise<ApiSearchResponse> =>
+    searchEventGroups('search_date.php', query, signal);

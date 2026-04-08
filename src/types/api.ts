@@ -136,3 +136,4 @@ export type ApiLocoFirstPageResponse = ApiPaginatedResponseFirstPage<
 >;
 export type ApiLocoEveryPageResponse = ApiPaginatedResponseEveryPage<ApiMergedEvent>;
 export type ApiLocoResponse = ApiLocoFirstPageResponse | ApiLocoEveryPageResponse;
+export type ApiSearchResponse = ApiEventGroupListResponse;

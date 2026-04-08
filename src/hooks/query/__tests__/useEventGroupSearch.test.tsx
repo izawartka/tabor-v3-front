@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { ApiError, HTTP_ERROR_GENERIC_MESSAGE } from '../../../services/httpService';
 import { useEventGroupSearch } from '../useEventGroupSearch';
-import { createEventGroupListResponse } from '../../../test/factories/api';
+import { createSearchResponse } from '../../../test/factories/api';
 
 describe('useEventGroupSearch', (): void => {
     it('is inactive for short query and does not call loader', (): void => {
@@ -21,7 +21,7 @@ describe('useEventGroupSearch', (): void => {
     });
 
     it('loads active query and supports reload', async (): Promise<void> => {
-        const loader = vi.fn().mockResolvedValue(createEventGroupListResponse());
+        const loader = vi.fn().mockResolvedValue(createSearchResponse());
 
         const { result } = renderHook(() =>
             useEventGroupSearch({

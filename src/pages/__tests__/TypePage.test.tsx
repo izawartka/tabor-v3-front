@@ -1,8 +1,11 @@
 import { screen } from '@testing-library/react';
 import type { ReactElement } from 'react';
+import type { ApiSearchResponse } from '../../types/api';
 import { TYPE_PAGE_PLACEHOLDER, TypePage } from '../TypePage';
 import { renderWithTheme } from '../../test/renderWithTheme';
-import { createEventGroupListResponse } from '../../test/factories/api';
+import { createSearchResponse } from '../../test/factories/api';
+
+const mockSearchContainer = vi.hoisted(() => vi.fn());
 
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
@@ -12,12 +15,22 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-vi.mock('../../hooks/query/useSearchQuery', () => ({
-    useSearchQuery: vi.fn()
+vi.mock('../../services/apiService', () => ({
+    searchLocos: vi.fn()
 }));
 
-vi.mock('../../hooks/query/useEventGroupSearch', () => ({
-    useEventGroupSearch: vi.fn()
+vi.mock('../../components/SearchContainer/SearchContainer', () => ({
+    SearchContainer: (props: {
+        placeholder: string;
+        searchLoader: (query: string, signal?: AbortSignal) => Promise<ApiSearchResponse>;
+        getSearchLink: (group: { id: string }) => string;
+        searchLoadingText?: string;
+        emptySearchText?: string;
+        children: React.ReactNode;
+    }): ReactElement => {
+        mockSearchContainer(props);
+        return <div data-testid="search-container">{props.children}</div>;
+    }
 }));
 
 vi.mock('../TypePageContent', () => ({
@@ -26,24 +39,34 @@ vi.mock('../TypePageContent', () => ({
     )
 }));
 
-import { useSearchQuery } from '../../hooks/query/useSearchQuery';
-import { useEventGroupSearch } from '../../hooks/query/useEventGroupSearch';
+import { searchLocos } from '../../services/apiService';
 
 describe('TypePage', (): void => {
-    it('renders search section and nested type content', (): void => {
-        vi.mocked(useSearchQuery).mockReturnValue({ query: '', setQuery: vi.fn() });
-        vi.mocked(useEventGroupSearch).mockReturnValue({
-            normalizedQuery: '',
-            isActive: false,
-            data: createEventGroupListResponse(),
-            isLoading: false,
-            error: null,
-            reload: vi.fn()
-        });
+    beforeEach((): void => {
+        vi.clearAllMocks();
+    });
+
+    it('passes mapped props to search container and renders nested type content', async (): Promise<void> => {
+        vi.mocked(searchLocos).mockResolvedValue(createSearchResponse());
 
         renderWithTheme(<TypePage />);
 
-        expect(screen.getByRole('searchbox')).toHaveAttribute('placeholder', TYPE_PAGE_PLACEHOLDER);
+        expect(mockSearchContainer).toHaveBeenCalledTimes(1);
+        const props = mockSearchContainer.mock.calls[0][0] as {
+            placeholder: string;
+            searchLoader: (query: string, signal?: AbortSignal) => Promise<ApiSearchResponse>;
+            getSearchLink: (group: { id: string }) => string;
+            searchLoadingText?: string;
+            emptySearchText?: string;
+        };
+
+        expect(props.placeholder).toBe(TYPE_PAGE_PLACEHOLDER);
+        expect(props.getSearchLink({ id: 'abc' })).toBe('/loco/abc');
+
+        const controller = new AbortController();
+        await props.searchLoader('ET22', controller.signal);
+        expect(searchLocos).toHaveBeenCalledWith('ET22', controller.signal);
+
         expect(screen.getByText('type-content-type-1')).toBeInTheDocument();
     });
 });

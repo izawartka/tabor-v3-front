@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ApiError, HTTP_ERROR_GENERIC_MESSAGE } from '../../services/httpService';
-import type { ApiEventGroupListResponse } from '../../types/api';
+import type { ApiSearchResponse } from '../../types/api';
 import { isSearchQueryActive, normalizeSearchQuery } from '../../utils/search';
 
 interface UseEventGroupSearchOptions {
     query: string;
     minQueryLength: number;
-    loader: (query: string, signal?: AbortSignal) => Promise<ApiEventGroupListResponse>;
+    loader: (query: string, signal?: AbortSignal) => Promise<ApiSearchResponse>;
 }
 
 interface UseEventGroupSearchResult {
     normalizedQuery: string;
     isActive: boolean;
-    data: ApiEventGroupListResponse | null;
+    data: ApiSearchResponse | null;
     isLoading: boolean;
     error: string | null;
     reload: () => void;
@@ -31,7 +31,7 @@ export const useEventGroupSearch = ({
     minQueryLength,
     loader
 }: UseEventGroupSearchOptions): UseEventGroupSearchResult => {
-    const [data, setData] = useState<ApiEventGroupListResponse | null>(null);
+    const [data, setData] = useState<ApiSearchResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [reloadToken, setReloadToken] = useState<number>(0);

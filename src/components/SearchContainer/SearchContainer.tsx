@@ -1,66 +1,58 @@
-import type { ReactNode } from 'react';
 import type { JSX } from 'react';
-import { EmptyState, ErrorState, LoadingState } from '../common/AsyncState';
-import { SearchInput } from './SearchInput';
-import { EventGroupGrid } from '../EventGroupGrid/EventGroupGrid';
-import type { ApiEventGroup } from '../../types/api';
+import { SEARCH_MIN_QUERY_LENGTH } from '../../utils/search';
+import { useSearchQuery } from '../../hooks/query/useSearchQuery';
+import { useEventGroupSearch } from '../../hooks/query/useEventGroupSearch';
+import { InnerSearchContainer } from './InnerSearchContainer';
+import type { ApiSearchResponse } from '../../types/api';
 
-export const SEARCH_CONTAINER_DEFAULT_LOADING_TEXT = 'Wyszukiwanie...';
-export const SEARCH_CONTAINER_DEFAULT_EMPTY_TEXT = 'Brak wyników wyszukiwania.';
-
-interface SearchContainerProps {
-    query: string;
-    onQueryChange: (nextQuery: string) => void;
+export interface SearchContainerProps {
     placeholder: string;
-    isSearchActive: boolean;
-    isSearchLoading: boolean;
-    searchError: string | null;
-    onRetrySearch: () => void;
-    searchEventGroups: ApiEventGroup[] | null;
-    getSearchLink: (group: ApiEventGroup) => string;
+    searchLoader: (query: string, signal?: AbortSignal) => Promise<ApiSearchResponse>;
+    getSearchLink: (group: { id: string }) => string;
     searchLoadingText?: string;
     emptySearchText?: string;
-    children: ReactNode;
+    minQueryLength?: number;
+    children: React.ReactNode;
 }
 
 export const SearchContainer = ({
-    query,
-    onQueryChange,
     placeholder,
-    isSearchActive,
-    isSearchLoading,
-    searchError,
-    onRetrySearch,
-    searchEventGroups,
+    searchLoader,
     getSearchLink,
-    searchLoadingText = SEARCH_CONTAINER_DEFAULT_LOADING_TEXT,
-    emptySearchText = SEARCH_CONTAINER_DEFAULT_EMPTY_TEXT,
+    searchLoadingText,
+    emptySearchText,
+    minQueryLength = SEARCH_MIN_QUERY_LENGTH,
     children
 }: SearchContainerProps): JSX.Element => {
-    const searchInput = (
-        <SearchInput query={query} onChange={onQueryChange} placeholder={placeholder} />
-    );
+    const { query, setQuery } = useSearchQuery();
 
-    if (!isSearchActive) {
-        return (
-            <>
-                {searchInput}
-                {children}
-            </>
-        );
-    }
+    const {
+        isActive: isSearchActive,
+        data: searchData,
+        isLoading: isSearchLoading,
+        error: searchError,
+        reload: reloadSearch
+    } = useEventGroupSearch({
+        query,
+        minQueryLength: minQueryLength,
+        loader: searchLoader
+    });
 
     return (
-        <>
-            {searchInput}
-            {isSearchLoading ? <LoadingState text={searchLoadingText} /> : null}
-            {searchError ? <ErrorState message={searchError} onRetry={onRetrySearch} /> : null}
-            {!isSearchLoading && !searchError && (searchEventGroups?.length ?? 0) === 0 ? (
-                <EmptyState text={emptySearchText} />
-            ) : null}
-            {!isSearchLoading && !searchError && (searchEventGroups?.length ?? 0) > 0 ? (
-                <EventGroupGrid eventGroups={searchEventGroups ?? []} getLink={getSearchLink} />
-            ) : null}
-        </>
+        <InnerSearchContainer
+            query={query}
+            onQueryChange={setQuery}
+            placeholder={placeholder}
+            isSearchActive={isSearchActive}
+            isSearchLoading={isSearchLoading}
+            searchError={searchError}
+            onRetrySearch={reloadSearch}
+            searchEventGroups={searchData?.event_groups ?? null}
+            getSearchLink={getSearchLink}
+            searchLoadingText={searchLoadingText}
+            emptySearchText={emptySearchText}
+        >
+            {children}
+        </InnerSearchContainer>
     );
 };

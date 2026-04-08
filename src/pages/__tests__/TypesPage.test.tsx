@@ -1,4 +1,6 @@
 import { screen } from '@testing-library/react';
+import type { ReactElement } from 'react';
+import type { ApiSearchResponse } from '../../types/api';
 import {
     TYPES_PAGE_EMPTY_TEXT,
     TYPES_PAGE_LOADING_TEXT,
@@ -6,41 +8,63 @@ import {
     TypesPage
 } from '../TypesPage';
 import { renderWithTheme } from '../../test/renderWithTheme';
-import { createEventGroupListResponse } from '../../test/factories/api';
+import { createSearchResponse } from '../../test/factories/api';
 
-vi.mock('../../hooks/query/useSearchQuery', () => ({
-    useSearchQuery: vi.fn()
+const mockSearchContainer = vi.hoisted(() => vi.fn());
+
+vi.mock('../../services/apiService', () => ({
+    searchLocos: vi.fn()
 }));
 
-vi.mock('../../hooks/query/useEventGroupSearch', () => ({
-    useEventGroupSearch: vi.fn()
+vi.mock('../../components/SearchContainer/SearchContainer', () => ({
+    SearchContainer: (props: {
+        placeholder: string;
+        searchLoader: (query: string, signal?: AbortSignal) => Promise<ApiSearchResponse>;
+        getSearchLink: (group: { id: string }) => string;
+        searchLoadingText?: string;
+        emptySearchText?: string;
+        children: React.ReactNode;
+    }): ReactElement => {
+        mockSearchContainer(props);
+        return <div data-testid="search-container">{props.children}</div>;
+    }
 }));
 
-import { useSearchQuery } from '../../hooks/query/useSearchQuery';
-import { useEventGroupSearch } from '../../hooks/query/useEventGroupSearch';
+vi.mock('../TypesPageContent', () => ({
+    TypesPageContent: (): ReactElement => <div>types-page-content</div>
+}));
+
+import { searchLocos } from '../../services/apiService';
 
 describe('TypesPage', (): void => {
-    it('passes mapped props to search container and renders search results', (): void => {
-        const searchData = createEventGroupListResponse();
+    beforeEach((): void => {
+        vi.clearAllMocks();
+    });
 
-        vi.mocked(useSearchQuery).mockReturnValue({ query: 'et2', setQuery: vi.fn() });
-        vi.mocked(useEventGroupSearch).mockReturnValue({
-            normalizedQuery: 'et2',
-            isActive: true,
-            data: searchData,
-            isLoading: false,
-            error: null,
-            reload: vi.fn()
-        });
+    it('passes mapped props to search container', async (): Promise<void> => {
+        vi.mocked(searchLocos).mockResolvedValue(createSearchResponse());
 
         renderWithTheme(<TypesPage />);
 
-        expect(screen.getByRole('searchbox')).toHaveAttribute(
-            'placeholder',
-            TYPES_PAGE_PLACEHOLDER
-        );
-        expect(screen.queryByText(TYPES_PAGE_LOADING_TEXT)).not.toBeInTheDocument();
-        expect(screen.queryByText(TYPES_PAGE_EMPTY_TEXT)).not.toBeInTheDocument();
-        expect(screen.getByText(searchData.event_groups[0].display_name)).toBeInTheDocument();
+        expect(mockSearchContainer).toHaveBeenCalledTimes(1);
+        const props = mockSearchContainer.mock.calls[0][0] as {
+            placeholder: string;
+            searchLoader: (query: string, signal?: AbortSignal) => Promise<ApiSearchResponse>;
+            getSearchLink: (group: { id: string }) => string;
+            searchLoadingText?: string;
+            emptySearchText?: string;
+        };
+
+        expect(props.placeholder).toBe(TYPES_PAGE_PLACEHOLDER);
+        expect(props.searchLoadingText).toBe(TYPES_PAGE_LOADING_TEXT);
+        expect(props.emptySearchText).toBe(TYPES_PAGE_EMPTY_TEXT);
+        expect(props.getSearchLink({ id: 'abc' })).toBe('/loco/abc');
+
+        const controller = new AbortController();
+        await props.searchLoader('ET41', controller.signal);
+        expect(searchLocos).toHaveBeenCalledWith('ET41', controller.signal);
+
+        expect(screen.getByTestId('search-container')).toBeInTheDocument();
+        expect(screen.getByText('types-page-content')).toBeInTheDocument();
     });
 });

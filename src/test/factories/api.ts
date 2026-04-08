@@ -8,6 +8,7 @@ import type {
     ApiLocoResponseMeta,
     ApiMergedEvent,
     ApiReference,
+    ApiSearchResponse,
     ApiSubevent,
     ApiTypeResponse,
     ApiTypesResponse
@@ -34,6 +35,13 @@ export const createEventGroupListResponse = (
     event_groups: [createEventGroup()],
     ...overrides
 });
+
+export const createSearchResponse = (
+    overrides: Partial<ApiSearchResponse> = {}
+): ApiSearchResponse =>
+    createEventGroupListResponse({
+        ...overrides
+    });
 
 export const createEventMedia = (overrides: Partial<ApiEventMedia> = {}): ApiEventMedia => ({
     photo: '602',
