@@ -49,4 +49,19 @@ describe('useSearchQuery', (): void => {
             normalizeValue: normalizeSearchQuery
         });
     });
+
+    it('supports custom query param key', (): void => {
+        const setUrlQuery = vi.fn();
+        vi.mocked(useUrlQueryParam).mockReturnValue(['value', setUrlQuery]);
+
+        const { result } = renderHook(() => useSearchQuery({ queryParamKey: 'custom' }));
+
+        expect(vi.mocked(useUrlQueryParam)).toHaveBeenCalledWith('custom');
+
+        act((): void => {
+            result.current.setQuery('next');
+        });
+
+        expect(setUrlQuery).toHaveBeenCalled();
+    });
 });

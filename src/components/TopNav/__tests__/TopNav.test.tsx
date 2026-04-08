@@ -16,4 +16,10 @@ describe('TopNav', (): void => {
         expect(screen.getByRole('link', { name: TOP_NAV_TABS[3].label })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: TOP_NAV_DARK_MODE_LABEL })).toBeInTheDocument();
     });
+
+    it('renders dark mode toggle', (): void => {
+        renderWithTheme(<TopNav />);
+
+        expect(screen.getByRole('button', { name: TOP_NAV_DARK_MODE_LABEL })).toBeInTheDocument();
+    });
 });
