@@ -1,7 +1,5 @@
 export const TOP_NAV_LABEL = 'Pokaż:';
 export const TOP_NAV_ARIA_LABEL = 'Główna nawigacja';
-export const TOP_NAV_DARK_MODE_LABEL = 'Włącz tryb jasny';
-export const TOP_NAV_LIGHT_MODE_LABEL = 'Włącz tryb ciemny';
 
 export const TOP_NAV_TABS = [
     { label: 'Według typów', to: '/types', activePaths: ['/', '/types', '/type', '/loco'] },

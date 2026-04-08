@@ -1,14 +1,8 @@
 import type { JSX } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useColorScheme } from '../../contexts/useColorScheme';
-import {
-    TOP_NAV_LABEL,
-    TOP_NAV_TABS,
-    TOP_NAV_DARK_MODE_LABEL,
-    TOP_NAV_LIGHT_MODE_LABEL,
-    TOP_NAV_ARIA_LABEL
-} from './TopNav.constants';
+import { TOP_NAV_LABEL, TOP_NAV_TABS, TOP_NAV_ARIA_LABEL } from './TopNav.constants';
+import { SchemeToggle } from './SchemeToggle';
 
 const Header = styled.header`
     background: ${({ theme }): string => theme.colors.surface};
@@ -24,37 +18,52 @@ const Inner = styled.div`
     padding: 12px 16px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
+
+    @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 10px;
+        padding: 10px 12px;
+    }
 `;
 
 const Label = styled.span`
     color: ${({ theme }): string => theme.colors.secondaryText};
     font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
+        font-size: 0.9rem;
+        line-height: 1.2;
+    }
 `;
 
 const Items = styled.nav`
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    align-items: center;
+
+    @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
+        grid-column: 1 / 2;
+        min-width: 0;
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: 2px;
+    }
 `;
 
 const Spacer = styled.div`
     margin-left: auto;
-`;
 
-const ToggleButton = styled.button`
-    width: 38px;
-    height: 38px;
-    display: inline-grid;
-    place-items: center;
-    border-radius: 999px;
-    border: 1px solid ${({ theme }): string => theme.colors.border};
-    background: ${({ theme }): string => theme.colors.surfaceAlt};
-    color: ${({ theme }): string => theme.colors.text};
-    cursor: pointer;
-    font-size: 1rem;
-    text-select: none;
+    @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
+        display: none;
+    }
 `;
 
 const Item = styled(Link)<{ $active: boolean }>`
@@ -66,6 +75,12 @@ const Item = styled(Link)<{ $active: boolean }>`
         $active ? theme.colors.accentSoft : theme.colors.surface};
     font-weight: ${({ $active }): 700 | 500 => ($active ? 700 : 500)};
     text-select: none;
+    white-space: nowrap;
+
+    @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
 `;
 
 const inAnyPath = (pathName: string, prefixes: readonly string[]): boolean => {
@@ -78,13 +93,12 @@ const inAnyPath = (pathName: string, prefixes: readonly string[]): boolean => {
 
 export const TopNav = (): JSX.Element => {
     const location = useLocation();
-    const { scheme, toggleScheme } = useColorScheme();
 
     return (
         <Header>
             <Inner>
-                <Label>{TOP_NAV_LABEL}</Label>
                 <Items aria-label={TOP_NAV_ARIA_LABEL}>
+                    <Label>{TOP_NAV_LABEL}</Label>
                     {TOP_NAV_TABS.map(tab => {
                         const isActive = inAnyPath(location.pathname, tab.activePaths);
 
@@ -96,15 +110,7 @@ export const TopNav = (): JSX.Element => {
                     })}
                 </Items>
                 <Spacer />
-                <ToggleButton
-                    onClick={toggleScheme}
-                    aria-label={
-                        scheme === 'dark' ? TOP_NAV_DARK_MODE_LABEL : TOP_NAV_LIGHT_MODE_LABEL
-                    }
-                    title={scheme === 'dark' ? TOP_NAV_DARK_MODE_LABEL : TOP_NAV_LIGHT_MODE_LABEL}
-                >
-                    <span aria-hidden="true">{scheme === 'dark' ? '☀️' : '🌙'}</span>
-                </ToggleButton>
+                <SchemeToggle />
             </Inner>
         </Header>
     );

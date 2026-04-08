@@ -1,7 +1,12 @@
 import { screen } from '@testing-library/react';
-import { TOP_NAV_DARK_MODE_LABEL, TOP_NAV_LABEL, TOP_NAV_TABS } from '../TopNav.constants';
+import type { ReactElement } from 'react';
+import { TOP_NAV_LABEL, TOP_NAV_TABS } from '../TopNav.constants';
 import { TopNav } from '../TopNav';
 import { renderWithTheme } from '../../../test/renderWithTheme';
+
+vi.mock('../SchemeToggle', () => ({
+    SchemeToggle: (): ReactElement => <button aria-label="scheme-toggle-mock">toggle</button>
+}));
 
 describe('TopNav', (): void => {
     it('renders all tabs and highlights types for nested route', (): void => {
@@ -14,12 +19,12 @@ describe('TopNav', (): void => {
         expect(screen.getByRole('link', { name: TOP_NAV_TABS[1].label })).toBeInTheDocument();
         expect(screen.getByRole('link', { name: TOP_NAV_TABS[2].label })).toBeInTheDocument();
         expect(screen.getByRole('link', { name: TOP_NAV_TABS[3].label })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: TOP_NAV_DARK_MODE_LABEL })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'scheme-toggle-mock' })).toBeInTheDocument();
     });
 
-    it('renders dark mode toggle', (): void => {
+    it('renders scheme toggle component', (): void => {
         renderWithTheme(<TopNav />);
 
-        expect(screen.getByRole('button', { name: TOP_NAV_DARK_MODE_LABEL })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'scheme-toggle-mock' })).toBeInTheDocument();
     });
 });
