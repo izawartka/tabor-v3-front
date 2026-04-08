@@ -8,7 +8,7 @@ const Value = styled.div<{ $isRef: boolean }>`
     background: ${({ theme, $isRef }): string =>
         $isRef ? theme.colors.accentSoft : theme.colors.surfaceAlt};
     padding: 1px 10px;
-    border-radius: 999px;
+    border-radius: 12px;
     font-weight: 600;
     line-height: 1.35;
     display: flex;

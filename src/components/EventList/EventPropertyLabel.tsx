@@ -2,14 +2,23 @@ import type { JSX } from 'react';
 import styled from 'styled-components';
 import { TextWithTooltip } from '../common/TextWithTooltip';
 
-const Item = styled.div`
+const StyledCont = styled.div`
     display: flex;
     gap: 8px;
-    align-items: center;
+    align-items: flex-start;
 `;
 
-const Label = styled.div`
+const StyledLabel = styled.div`
     color: ${({ theme }): string => theme.colors.text};
+    flex: 0;
+    padding-top: 1px;
+`;
+
+const StyledContent = styled.div`
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
 `;
 
 export interface EventPropertyLabelProps {
@@ -24,11 +33,11 @@ export const EventPropertyLabel = ({
     children
 }: EventPropertyLabelProps): JSX.Element => {
     return (
-        <Item>
-            <Label>
+        <StyledCont>
+            <StyledLabel>
                 {tooltip ? <TextWithTooltip text={text} tooltipContent={tooltip} /> : text}
-            </Label>
-            {children}
-        </Item>
+            </StyledLabel>
+            <StyledContent>{children}</StyledContent>
+        </StyledCont>
     );
 };
