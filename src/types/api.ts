@@ -93,7 +93,6 @@ export type ApiPaginatedResponse<ItemT, MetaT> =
 
 export interface ApiEventListInfo {
     event_count: number;
-    events_with_media_count: number;
 }
 
 export interface ApiEventListResponseMeta {
