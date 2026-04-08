@@ -22,6 +22,15 @@ vi.mock('../../pages/TypePage', () => ({
 vi.mock('../../pages/LocoPage', () => ({
     LocoPage: (): ReactElement => <div>loco-page</div>
 }));
+vi.mock('../../pages/YearsPage', () => ({
+    YearsPage: (): ReactElement => <div>years-page</div>
+}));
+vi.mock('../../pages/YearPage', () => ({
+    YearPage: (): ReactElement => <div>year-page</div>
+}));
+vi.mock('../../pages/DatePage', () => ({
+    DatePage: (): ReactElement => <div>date-page</div>
+}));
 vi.mock('../../pages/PlaceholderPage', () => ({
     PlaceholderEventGroupsPage: (): ReactElement => <div>placeholder-groups</div>,
     PlaceholderEventListPage: (): ReactElement => <div>placeholder-list</div>
@@ -56,6 +65,33 @@ describe('AppRouter', (): void => {
             </MemoryRouter>
         );
         expect(screen.getByText('loco-page')).toBeInTheDocument();
+
+        cleanup();
+
+        render(
+            <MemoryRouter initialEntries={['/years']}>
+                <AppRouter />
+            </MemoryRouter>
+        );
+        expect(screen.getByText('years-page')).toBeInTheDocument();
+
+        cleanup();
+
+        render(
+            <MemoryRouter initialEntries={['/year/2025']}>
+                <AppRouter />
+            </MemoryRouter>
+        );
+        expect(screen.getByText('year-page')).toBeInTheDocument();
+
+        cleanup();
+
+        render(
+            <MemoryRouter initialEntries={['/date/2025.01.02']}>
+                <AppRouter />
+            </MemoryRouter>
+        );
+        expect(screen.getByText('date-page')).toBeInTheDocument();
     });
 
     it('redirects unknown paths to not-found', (): void => {

@@ -1,10 +1,13 @@
 import { fetchJson, fetchText } from './httpService';
 import { getApiUrl, getRefreshTimestampUrl, getStaticJsonUrl } from '../utils/paths';
 import type {
+    ApiDateResponse,
     ApiLocoResponse,
     ApiSearchResponse,
     ApiTypeResponse,
-    ApiTypesResponse
+    ApiTypesResponse,
+    ApiYearResponse,
+    ApiYearsResponse
 } from '../types/api';
 
 export const loadRefreshTimestamp = async (signal?: AbortSignal): Promise<string> => {
@@ -38,6 +41,36 @@ export const loadLocoPage = (
 
     return fetchJson<ApiLocoResponse>(
         getStaticJsonUrl(`loco/${encodeURIComponent(locoId)}${suffix}.json`, refreshTimestamp),
+        { signal }
+    );
+};
+
+export const loadYears = (
+    refreshTimestamp: string,
+    signal?: AbortSignal
+): Promise<ApiYearsResponse> =>
+    fetchJson<ApiYearsResponse>(getStaticJsonUrl('years.json', refreshTimestamp), { signal });
+
+export const loadYear = (
+    year: string,
+    refreshTimestamp: string,
+    signal?: AbortSignal
+): Promise<ApiYearResponse> =>
+    fetchJson<ApiYearResponse>(
+        getStaticJsonUrl(`year/${encodeURIComponent(year)}.json`, refreshTimestamp),
+        { signal }
+    );
+
+export const loadDatePage = (
+    date: string,
+    page: number,
+    refreshTimestamp: string,
+    signal?: AbortSignal
+): Promise<ApiDateResponse> => {
+    const suffix = page === 0 ? '' : `_page_${page}`;
+
+    return fetchJson<ApiDateResponse>(
+        getStaticJsonUrl(`date/${encodeURIComponent(date)}${suffix}.json`, refreshTimestamp),
         { signal }
     );
 };

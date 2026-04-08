@@ -119,6 +119,16 @@ export interface ApiLocoInfo {
     class_no: string;
 }
 
+export interface ApiYearInfo {
+    year: string;
+}
+
+export interface ApiDateInfo {
+    date: string;
+    year: string;
+    year_ref: ApiReference;
+}
+
 export type ApiTypesResponse = ApiEventGroupListResponse;
 
 export interface ApiTypeResponse extends ApiEventGroupListResponse {
@@ -136,4 +146,22 @@ export type ApiLocoFirstPageResponse = ApiPaginatedResponseFirstPage<
 >;
 export type ApiLocoEveryPageResponse = ApiPaginatedResponseEveryPage<ApiMergedEvent>;
 export type ApiLocoResponse = ApiLocoFirstPageResponse | ApiLocoEveryPageResponse;
+
+export type ApiYearsResponse = ApiEventGroupListResponse;
+
+export interface ApiYearResponse extends ApiEventGroupListResponse {
+    year_info: ApiYearInfo;
+}
+
+export interface ApiDateResponseMeta extends ApiEventListResponseMeta {
+    date_info: ApiDateInfo;
+}
+
+export type ApiDateFirstPageResponse = ApiPaginatedResponseFirstPage<
+    ApiMergedEvent,
+    ApiDateResponseMeta
+>;
+export type ApiDateEveryPageResponse = ApiPaginatedResponseEveryPage<ApiMergedEvent>;
+export type ApiDateResponse = ApiDateFirstPageResponse | ApiDateEveryPageResponse;
+
 export type ApiSearchResponse = ApiEventGroupListResponse;

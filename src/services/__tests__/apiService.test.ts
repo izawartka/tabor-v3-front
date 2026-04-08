@@ -1,8 +1,11 @@
 import {
+    loadDatePage,
     loadLocoPage,
     loadRefreshTimestamp,
     loadTypeById,
     loadTypes,
+    loadYear,
+    loadYears,
     searchDates,
     searchEventGroups,
     searchLocos,
@@ -172,6 +175,82 @@ describe('apiService', (): void => {
         });
     });
 
+    describe('loadYears', (): void => {
+        it('builds years URL with refresh timestamp', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadYears('123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('years.json?refresh=123');
+        });
+
+        it('passes AbortSignal to fetchJson', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            const controller = new AbortController();
+            await loadYears('timestamp', controller.signal);
+
+            expect(httpService.fetchJson).toHaveBeenCalledWith(
+                expect.any(String),
+                expect.objectContaining({ signal: controller.signal })
+            );
+        });
+    });
+
+    describe('loadYear', (): void => {
+        it('builds year URL with encoded year and refresh timestamp', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadYear('2025', '123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('year/2025.json?refresh=123');
+        });
+
+        it('encodes special characters in year path segment', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadYear('2025/extra', 'ts');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('year/2025%2Fextra.json');
+        });
+    });
+
+    describe('loadDatePage', (): void => {
+        it('builds URL for first date page without suffix', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadDatePage('2025.01.02', 0, '123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('date/2025.01.02.json?refresh=123');
+            expect(url).not.toContain('_page_');
+        });
+
+        it('builds URL with page suffix for subsequent date pages', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadDatePage('2025.01.02', 2, '123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('date/2025.01.02_page_2.json?refresh=123');
+        });
+
+        it('passes AbortSignal through', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            const controller = new AbortController();
+            await loadDatePage('2025.01.02', 0, 'ts', controller.signal);
+
+            expect(httpService.fetchJson).toHaveBeenCalledWith(
+                expect.any(String),
+                expect.objectContaining({ signal: controller.signal })
+            );
+        });
+    });
+
     describe('searchEventGroups', (): void => {
         it('builds search URL with endpoint and query', async (): Promise<void> => {
             vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
@@ -302,6 +381,19 @@ describe('apiService', (): void => {
             expect(calls[0]).toContain('search_loco.php?query=query1');
             expect(calls[1]).toContain('search_place.php?query=query2');
             expect(calls[2]).toContain('search_date.php?query=query3');
+        });
+
+        it('loads years/year/date static endpoints with refresh timestamp', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValue({} as never);
+
+            await loadYears('123');
+            await loadYear('2025', '123');
+            await loadDatePage('2025.01.02', 1, '123');
+
+            const calls = vi.mocked(httpService.fetchJson).mock.calls.map(call => call[0]);
+            expect(calls[0]).toContain('years.json?refresh=123');
+            expect(calls[1]).toContain('year/2025.json?refresh=123');
+            expect(calls[2]).toContain('date/2025.01.02_page_1.json?refresh=123');
         });
     });
 });
