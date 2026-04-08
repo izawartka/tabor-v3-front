@@ -8,7 +8,7 @@ const Panel = styled.section`
     background: ${({ theme }): string => theme.colors.surface};
     border: 1px solid ${({ theme }): string => theme.colors.border};
     border-radius: ${({ theme }): string => theme.radii.lg};
-    padding: 16px;
+    padding: 14px;
     margin-bottom: 16px;
 `;
 
