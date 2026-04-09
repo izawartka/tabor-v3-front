@@ -24,6 +24,7 @@ export interface ApiEventMedia {
     photo_fav: boolean;
     video: string | null;
     video_fav: boolean;
+    place_mismatch?: true;
 }
 
 export interface ApiEventTime {
@@ -127,6 +128,7 @@ export interface ApiDateInfo {
     date: string;
     year: string;
     year_ref: ApiReference;
+    common_private_info: string | null;
 }
 
 export interface ApiPlaceInfo {
