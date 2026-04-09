@@ -19,6 +19,10 @@ const Layer = styled.div<{ $top: number; $left: number; $width: number }>`
     pointer-events: none;
 `;
 
+const Anchor = styled.div`
+    display: contents;
+`;
+
 const canHover = (): boolean =>
     typeof window !== 'undefined' &&
     window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -58,29 +62,44 @@ export const HoverTooltip = ({
     width = DEFAULT_WIDTH,
     enableTapOnTouch = false
 }: HoverTooltipProps): JSX.Element => {
-    const anchorRef = useRef<HTMLDivElement | null>(null);
+    const anchorRef = useRef<HTMLElement | null>(null);
     const tooltipRef = useRef<HTMLDivElement | null>(null);
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
+    const getAnchorElement = useCallback((): HTMLElement | null => {
+        const anchorNode = anchorRef.current;
+
+        if (!anchorNode) {
+            return null;
+        }
+
+        const firstChild = anchorNode.firstElementChild;
+        return firstChild instanceof HTMLElement ? firstChild : anchorNode;
+    }, []);
+
     const updatePosition = useCallback((): void => {
-        if (!anchorRef.current) {
+        const anchorElement = getAnchorElement();
+
+        if (!anchorElement) {
             return;
         }
 
         setPosition(
             calculatePosition(
-                anchorRef.current.getBoundingClientRect(),
+                anchorElement.getBoundingClientRect(),
                 tooltipRef.current?.offsetHeight || 160,
                 width
             )
         );
-    }, [width]);
+    }, [getAnchorElement, width]);
 
     useEffect((): (() => void) => {
+        let frameId: number | null = null;
+
         if (isOpen) {
-            updatePosition();
+            frameId = window.requestAnimationFrame(updatePosition);
         }
 
         const handle = (): void => updatePosition();
@@ -89,6 +108,10 @@ export const HoverTooltip = ({
         window.addEventListener('scroll', handle, true);
 
         return (): void => {
+            if (frameId !== null) {
+                window.cancelAnimationFrame(frameId);
+            }
+
             window.removeEventListener('resize', handle);
             window.removeEventListener('scroll', handle, true);
         };
@@ -153,23 +176,46 @@ export const HoverTooltip = ({
         setIsOpen(value => !value);
     };
 
+    const setAnchorNode = useCallback((node: HTMLDivElement | null): void => {
+        anchorRef.current = node;
+    }, []);
+
+    const handleMouseEnter = (): void => {
+        open();
+    };
+
+    const handleMouseLeave = (): void => {
+        close();
+    };
+
+    const handleClick = (): void => {
+        toggleTap();
+    };
+
+    const tooltipLayer = isOpen
+        ? createPortal(
+              <Layer
+                  ref={tooltipRef}
+                  role="tooltip"
+                  $top={position.top}
+                  $left={position.left}
+                  $width={width}
+              >
+                  {content}
+              </Layer>,
+              document.body
+          )
+        : null;
+
     return (
-        <div ref={anchorRef} onMouseEnter={open} onMouseLeave={close} onClick={toggleTap}>
+        <Anchor
+            ref={setAnchorNode}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={handleClick}
+        >
             {children}
-            {isOpen
-                ? createPortal(
-                      <Layer
-                          ref={tooltipRef}
-                          role="tooltip"
-                          $top={position.top}
-                          $left={position.left}
-                          $width={width}
-                      >
-                          {content}
-                      </Layer>,
-                      document.body
-                  )
-                : null}
-        </div>
+            {tooltipLayer}
+        </Anchor>
     );
 };

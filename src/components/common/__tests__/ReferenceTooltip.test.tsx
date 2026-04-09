@@ -125,6 +125,18 @@ describe('ReferenceTooltip', (): void => {
 
             expect(screen.getByRole('link', { name: 'Link anchor' })).toBeInTheDocument();
         });
+
+        it('supports styled anchor element', (): void => {
+            renderWithTheme(
+                <ReferenceTooltip reference={createReference()}>
+                    <button className="reference-anchor">Anchor button</button>
+                </ReferenceTooltip>
+            );
+
+            expect(screen.getByRole('button', { name: 'Anchor button' })).toHaveClass(
+                'reference-anchor'
+            );
+        });
     });
 
     describe('hover interaction', (): void => {
@@ -194,6 +206,20 @@ describe('ReferenceTooltip', (): void => {
             );
 
             expect(screen.getByRole('button')).toBeInTheDocument();
+        });
+
+        it('preserves child click handler', async (): Promise<void> => {
+            const user = userEvent.setup();
+            const onClick = vi.fn();
+
+            renderWithTheme(
+                <ReferenceTooltip reference={createReference()}>
+                    <button onClick={onClick}>Anchor</button>
+                </ReferenceTooltip>
+            );
+
+            await user.click(screen.getByRole('button', { name: 'Anchor' }));
+            expect(onClick).toHaveBeenCalledTimes(1);
         });
     });
 });

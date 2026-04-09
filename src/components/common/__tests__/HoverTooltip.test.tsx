@@ -201,4 +201,42 @@ describe('HoverTooltip', (): void => {
 
         expect(tooltip).toBeInTheDocument();
     });
+
+    it('supports styled child anchor and opens tooltip on hover', async (): Promise<void> => {
+        const user = userEvent.setup();
+        vi.spyOn(window, 'matchMedia').mockImplementation(
+            () => ({ matches: true }) as MediaQueryList
+        );
+
+        renderWithTheme(
+            <HoverTooltip content="Tooltip from child">
+                <button className="anchor-button">Anchor child</button>
+            </HoverTooltip>
+        );
+
+        const anchor = screen.getByRole('button', { name: 'Anchor child' });
+        expect(anchor).toHaveClass('anchor-button');
+
+        await user.hover(anchor);
+        expect(screen.getByRole('tooltip')).toHaveTextContent('Tooltip from child');
+    });
+
+    it('keeps child click handler', async (): Promise<void> => {
+        const user = userEvent.setup();
+        const onClick = vi.fn();
+        vi.spyOn(window, 'matchMedia').mockImplementation(
+            () => ({ matches: false }) as MediaQueryList
+        );
+
+        renderWithTheme(
+            <HoverTooltip content="Tooltip" enableTapOnTouch>
+                <button onClick={onClick}>Tap child</button>
+            </HoverTooltip>
+        );
+
+        await user.click(screen.getByRole('button', { name: 'Tap child' }));
+
+        expect(onClick).toHaveBeenCalledTimes(1);
+        expect(screen.getByRole('tooltip')).toBeInTheDocument();
+    });
 });
