@@ -129,6 +129,11 @@ export interface ApiDateInfo {
     year_ref: ApiReference;
 }
 
+export interface ApiPlaceInfo {
+    id: string;
+    display_name: string;
+}
+
 export type ApiTypesResponse = ApiEventGroupListResponse;
 
 export interface ApiTypeResponse extends ApiEventGroupListResponse {
@@ -163,5 +168,18 @@ export type ApiDateFirstPageResponse = ApiPaginatedResponseFirstPage<
 >;
 export type ApiDateEveryPageResponse = ApiPaginatedResponseEveryPage<ApiMergedEvent>;
 export type ApiDateResponse = ApiDateFirstPageResponse | ApiDateEveryPageResponse;
+
+export type ApiPlacesResponse = ApiEventGroupListResponse;
+
+export interface ApiPlaceResponseMeta extends ApiEventListResponseMeta {
+    place_info: ApiPlaceInfo;
+}
+
+export type ApiPlaceFirstPageResponse = ApiPaginatedResponseFirstPage<
+    ApiMergedEvent,
+    ApiPlaceResponseMeta
+>;
+export type ApiPlaceEveryPageResponse = ApiPaginatedResponseEveryPage<ApiMergedEvent>;
+export type ApiPlaceResponse = ApiPlaceFirstPageResponse | ApiPlaceEveryPageResponse;
 
 export type ApiSearchResponse = ApiEventGroupListResponse;

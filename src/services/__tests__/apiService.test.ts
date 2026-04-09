@@ -1,6 +1,8 @@
 import {
     loadDatePage,
     loadLocoPage,
+    loadPlacePage,
+    loadPlaces,
     loadRefreshTimestamp,
     loadTypeById,
     loadTypes,
@@ -251,6 +253,71 @@ describe('apiService', (): void => {
         });
     });
 
+    describe('loadPlaces', (): void => {
+        it('builds places URL with refresh timestamp', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadPlaces('123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('places.json?refresh=123');
+        });
+
+        it('passes AbortSignal to fetchJson', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            const controller = new AbortController();
+            await loadPlaces('timestamp', controller.signal);
+
+            expect(httpService.fetchJson).toHaveBeenCalledWith(
+                expect.any(String),
+                expect.objectContaining({ signal: controller.signal })
+            );
+        });
+    });
+
+    describe('loadPlacePage', (): void => {
+        it('builds URL for first place page without suffix', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadPlacePage('katowice', 0, '123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('place/katowice.json?refresh=123');
+            expect(url).not.toContain('_page_');
+        });
+
+        it('builds URL with page suffix for subsequent place pages', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadPlacePage('katowice', 3, '123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('place/katowice_page_3.json?refresh=123');
+        });
+
+        it('encodes special characters in place ID', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadPlacePage('poznań_główny', 0, 'ts');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('place/pozna%C5%84_g%C5%82%C3%B3wny.json');
+        });
+
+        it('passes AbortSignal through', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            const controller = new AbortController();
+            await loadPlacePage('poznań_główny', 0, 'ts', controller.signal);
+
+            expect(httpService.fetchJson).toHaveBeenCalledWith(
+                expect.any(String),
+                expect.objectContaining({ signal: controller.signal })
+            );
+        });
+    });
+
     describe('searchEventGroups', (): void => {
         it('builds search URL with endpoint and query', async (): Promise<void> => {
             vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
@@ -394,6 +461,19 @@ describe('apiService', (): void => {
             expect(calls[0]).toContain('years.json?refresh=123');
             expect(calls[1]).toContain('year/2025.json?refresh=123');
             expect(calls[2]).toContain('date/2025.01.02_page_1.json?refresh=123');
+        });
+
+        it('loads places/place static endpoints with refresh timestamp', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValue({} as never);
+
+            await loadPlaces('123');
+            await loadPlacePage('poznań_główny', 1, '123');
+
+            const calls = vi.mocked(httpService.fetchJson).mock.calls.map(call => call[0]);
+            expect(calls[0]).toContain('places.json?refresh=123');
+            expect(calls[1]).toContain(
+                'place/pozna%C5%84_g%C5%82%C3%B3wny_page_1.json?refresh=123'
+            );
         });
     });
 });

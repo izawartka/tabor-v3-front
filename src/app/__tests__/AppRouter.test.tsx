@@ -22,6 +22,12 @@ vi.mock('../../pages/TypePage', () => ({
 vi.mock('../../pages/LocoPage', () => ({
     LocoPage: (): ReactElement => <div>loco-page</div>
 }));
+vi.mock('../../pages/PlacesPage', () => ({
+    PlacesPage: (): ReactElement => <div>places-page</div>
+}));
+vi.mock('../../pages/PlacePage', () => ({
+    PlacePage: (): ReactElement => <div>place-page</div>
+}));
 vi.mock('../../pages/YearsPage', () => ({
     YearsPage: (): ReactElement => <div>years-page</div>
 }));
@@ -32,7 +38,6 @@ vi.mock('../../pages/DatePage', () => ({
     DatePage: (): ReactElement => <div>date-page</div>
 }));
 vi.mock('../../pages/PlaceholderPage', () => ({
-    PlaceholderEventGroupsPage: (): ReactElement => <div>placeholder-groups</div>,
     PlaceholderEventListPage: (): ReactElement => <div>placeholder-list</div>
 }));
 vi.mock('../../pages/NotFoundPage', () => ({
@@ -65,6 +70,24 @@ describe('AppRouter', (): void => {
             </MemoryRouter>
         );
         expect(screen.getByText('loco-page')).toBeInTheDocument();
+
+        cleanup();
+
+        render(
+            <MemoryRouter initialEntries={['/places']}>
+                <AppRouter />
+            </MemoryRouter>
+        );
+        expect(screen.getByText('places-page')).toBeInTheDocument();
+
+        cleanup();
+
+        render(
+            <MemoryRouter initialEntries={['/place/poznań_główny']}>
+                <AppRouter />
+            </MemoryRouter>
+        );
+        expect(screen.getByText('place-page')).toBeInTheDocument();
 
         cleanup();
 

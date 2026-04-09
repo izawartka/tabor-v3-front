@@ -60,19 +60,19 @@ describe('event list helper utils', (): void => {
     describe('getPlaceRefData', (): void => {
         it('builds place reference when ref exists', (): void => {
             const reference = createReference();
-            const place = createEventPlace({ id: 'kraków-główny', place_ref: reference });
+            const place = createEventPlace({ id: 'kraków_główny', place_ref: reference });
 
             const result = getPlaceRefData(place);
 
             expect(result).toEqual({
                 ref: reference,
-                href: '/place/kraków-główny',
+                href: '/place/kraków_główny',
                 refText: EVENT_ITEM_PLACE_REF_TEXT
             });
         });
 
         it('returns undefined when place_ref is missing', (): void => {
-            const place = createEventPlace({ id: 'kraków-główny' });
+            const place = createEventPlace({ id: 'kraków_główny' });
             expect(getPlaceRefData(place)).toBeUndefined();
         });
 
@@ -131,7 +131,7 @@ describe('event list helper utils', (): void => {
 
     describe('getPlacePropertyValue', (): void => {
         it('maps place to property value object with text', (): void => {
-            const place = createEventPlace({ text: 'Kraków Główny', id: 'kraków-główny' });
+            const place = createEventPlace({ text: 'Kraków Główny', id: 'kraków_główny' });
 
             const result = getPlacePropertyValue(place);
 
@@ -145,14 +145,14 @@ describe('event list helper utils', (): void => {
             const reference = createReference();
             const place = createEventPlace({
                 text: 'Kraków Główny',
-                id: 'kraków-główny',
+                id: 'kraków_główny',
                 place_ref: reference
             });
 
             const result = getPlacePropertyValue(place);
 
             expect(result.text).toBe('Kraków Główny');
-            expect(result.refData?.href).toBe('/place/kraków-główny');
+            expect(result.refData?.href).toBe('/place/kraków_główny');
             expect(result.refData?.ref).toEqual(reference);
         });
 

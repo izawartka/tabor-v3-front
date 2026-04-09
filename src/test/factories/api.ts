@@ -63,7 +63,7 @@ export const createEventPlace = (overrides: Partial<ApiEventPlace> = {}): ApiEve
     text: 'Poznań Główny',
     is_main: true,
     name: 'Poznań Główny',
-    id: 'poznań-główny',
+    id: 'poznań_główny',
     ...overrides
 });
 

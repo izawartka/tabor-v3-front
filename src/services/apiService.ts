@@ -3,6 +3,8 @@ import { getApiUrl, getRefreshTimestampUrl, getStaticJsonUrl } from '../utils/pa
 import type {
     ApiDateResponse,
     ApiLocoResponse,
+    ApiPlaceResponse,
+    ApiPlacesResponse,
     ApiSearchResponse,
     ApiTypeResponse,
     ApiTypesResponse,
@@ -71,6 +73,26 @@ export const loadDatePage = (
 
     return fetchJson<ApiDateResponse>(
         getStaticJsonUrl(`date/${encodeURIComponent(date)}${suffix}.json`, refreshTimestamp),
+        { signal }
+    );
+};
+
+export const loadPlaces = (
+    refreshTimestamp: string,
+    signal?: AbortSignal
+): Promise<ApiPlacesResponse> =>
+    fetchJson<ApiPlacesResponse>(getStaticJsonUrl('places.json', refreshTimestamp), { signal });
+
+export const loadPlacePage = (
+    placeId: string,
+    page: number,
+    refreshTimestamp: string,
+    signal?: AbortSignal
+): Promise<ApiPlaceResponse> => {
+    const suffix = page === 0 ? '' : `_page_${page}`;
+
+    return fetchJson<ApiPlaceResponse>(
+        getStaticJsonUrl(`place/${encodeURIComponent(placeId)}${suffix}.json`, refreshTimestamp),
         { signal }
     );
 };
