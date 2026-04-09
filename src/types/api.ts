@@ -182,4 +182,12 @@ export type ApiPlaceFirstPageResponse = ApiPaginatedResponseFirstPage<
 export type ApiPlaceEveryPageResponse = ApiPaginatedResponseEveryPage<ApiMergedEvent>;
 export type ApiPlaceResponse = ApiPlaceFirstPageResponse | ApiPlaceEveryPageResponse;
 
+export type ApiFavResponseMeta = ApiEventListResponseMeta;
+export type ApiFavFirstPageResponse = ApiPaginatedResponseFirstPage<
+    ApiMergedEvent,
+    ApiFavResponseMeta
+>;
+export type ApiFavEveryPageResponse = ApiPaginatedResponseEveryPage<ApiMergedEvent>;
+export type ApiFavResponse = ApiFavFirstPageResponse | ApiFavEveryPageResponse;
+
 export type ApiSearchResponse = ApiEventGroupListResponse;

@@ -37,8 +37,8 @@ vi.mock('../../pages/YearPage', () => ({
 vi.mock('../../pages/DatePage', () => ({
     DatePage: (): ReactElement => <div>date-page</div>
 }));
-vi.mock('../../pages/PlaceholderPage', () => ({
-    PlaceholderEventListPage: (): ReactElement => <div>placeholder-list</div>
+vi.mock('../../pages/FavPage', () => ({
+    FavPage: (): ReactElement => <div>fav-page</div>
 }));
 vi.mock('../../pages/NotFoundPage', () => ({
     NotFoundPage: (): ReactElement => <div>not-found</div>
@@ -115,6 +115,15 @@ describe('AppRouter', (): void => {
             </MemoryRouter>
         );
         expect(screen.getByText('date-page')).toBeInTheDocument();
+
+        cleanup();
+
+        render(
+            <MemoryRouter initialEntries={['/fav']}>
+                <AppRouter />
+            </MemoryRouter>
+        );
+        expect(screen.getByText('fav-page')).toBeInTheDocument();
     });
 
     it('redirects unknown paths to not-found', (): void => {

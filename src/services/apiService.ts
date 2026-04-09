@@ -2,6 +2,7 @@ import { fetchJson, fetchText } from './httpService';
 import { getApiUrl, getRefreshTimestampUrl, getStaticJsonUrl } from '../utils/paths';
 import type {
     ApiDateResponse,
+    ApiFavResponse,
     ApiLocoResponse,
     ApiPlaceResponse,
     ApiPlacesResponse,
@@ -93,6 +94,19 @@ export const loadPlacePage = (
 
     return fetchJson<ApiPlaceResponse>(
         getStaticJsonUrl(`place/${encodeURIComponent(placeId)}${suffix}.json`, refreshTimestamp),
+        { signal }
+    );
+};
+
+export const loadFavPage = (
+    page: number,
+    refreshTimestamp: string,
+    signal?: AbortSignal
+): Promise<ApiFavResponse> => {
+    const suffix = page === 0 ? '' : `_page_${page}`;
+
+    return fetchJson<ApiFavResponse>(
+        getStaticJsonUrl(`fav_events${suffix}.json`, refreshTimestamp),
         { signal }
     );
 };

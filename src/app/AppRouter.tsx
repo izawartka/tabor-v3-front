@@ -3,7 +3,6 @@ import { PageLayout } from '../components/PageLayout/PageLayout';
 import { RefreshTimestampGate } from './RefreshTimestampGate';
 import { LocoPage } from '../pages/LocoPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { PlaceholderEventListPage } from '../pages/PlaceholderPage';
 import { TypePage } from '../pages/TypePage';
 import { TypesPage } from '../pages/TypesPage';
 import { YearsPage } from '../pages/YearsPage';
@@ -12,6 +11,7 @@ import { DatePage } from '../pages/DatePage';
 import type { JSX } from 'react';
 import { PlacesPage } from '../pages/PlacesPage';
 import { PlacePage } from '../pages/PlacePage';
+import { FavPage } from '../pages/FavPage';
 
 export const AppRouter = (): JSX.Element => (
     <PageLayout>
@@ -29,7 +29,7 @@ export const AppRouter = (): JSX.Element => (
                 <Route path="/year/:year" element={<YearPage />} />
                 <Route path="/date/:date" element={<DatePage />} />
 
-                <Route path="/fav" element={<PlaceholderEventListPage />} />
+                <Route path="/fav" element={<FavPage />} />
 
                 <Route path="/404" element={<NotFoundPage />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />

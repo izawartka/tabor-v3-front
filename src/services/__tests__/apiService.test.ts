@@ -1,5 +1,6 @@
 import {
     loadDatePage,
+    loadFavPage,
     loadLocoPage,
     loadPlacePage,
     loadPlaces,
@@ -318,6 +319,39 @@ describe('apiService', (): void => {
         });
     });
 
+    describe('loadFavPage', (): void => {
+        it('builds URL for first fav page without suffix', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadFavPage(0, '123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('fav_events.json?refresh=123');
+            expect(url).not.toContain('_page_');
+        });
+
+        it('builds URL with page suffix for subsequent fav pages', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            await loadFavPage(4, '123');
+
+            const url = vi.mocked(httpService.fetchJson).mock.calls[0][0];
+            expect(url).toContain('fav_events_page_4.json?refresh=123');
+        });
+
+        it('passes AbortSignal through', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
+
+            const controller = new AbortController();
+            await loadFavPage(0, 'ts', controller.signal);
+
+            expect(httpService.fetchJson).toHaveBeenCalledWith(
+                expect.any(String),
+                expect.objectContaining({ signal: controller.signal })
+            );
+        });
+    });
+
     describe('searchEventGroups', (): void => {
         it('builds search URL with endpoint and query', async (): Promise<void> => {
             vi.mocked(httpService.fetchJson).mockResolvedValueOnce({});
@@ -474,6 +508,17 @@ describe('apiService', (): void => {
             expect(calls[1]).toContain(
                 'place/pozna%C5%84_g%C5%82%C3%B3wny_page_1.json?refresh=123'
             );
+        });
+
+        it('loads fav static endpoints with refresh timestamp', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValue({} as never);
+
+            await loadFavPage(0, '123');
+            await loadFavPage(2, '123');
+
+            const calls = vi.mocked(httpService.fetchJson).mock.calls.map(call => call[0]);
+            expect(calls[0]).toContain('fav_events.json?refresh=123');
+            expect(calls[1]).toContain('fav_events_page_2.json?refresh=123');
         });
     });
 });
