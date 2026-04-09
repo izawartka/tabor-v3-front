@@ -9,14 +9,7 @@ import { darkTheme } from '../styles/theme';
 export const TEST_DEFAULT_ROUTE = '/';
 export const TEST_DEFAULT_SCHEME = 'dark';
 
-export const renderWithTheme = (
-    ui: ReactElement,
-    route = TEST_DEFAULT_ROUTE
-): RenderResult<
-    typeof import('D:/Programowanie/tabor3/node_modules/@testing-library/dom/types/queries'),
-    HTMLElement,
-    HTMLElement
-> =>
+export const renderWithTheme = (ui: ReactElement, route = TEST_DEFAULT_ROUTE): RenderResult =>
     render(
         <ColorSchemeContext.Provider value={{ scheme: TEST_DEFAULT_SCHEME, toggleScheme: vi.fn() }}>
             <ThemeProvider theme={darkTheme}>
