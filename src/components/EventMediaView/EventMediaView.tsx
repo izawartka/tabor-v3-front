@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import type { JSX } from 'react';
 import type { ApiEventMedia } from '../../types/api';
 import styled from 'styled-components';
-import { FavoriteBadge } from '../common/FavoriteBadge';
 import { ProgressivePhoto } from '../common/ProgressivePhoto';
+import { MediaBadges } from './MediaBadges';
 
 export const EVENT_MEDIA_VIEW_TOGGLE_TO_VIDEO_TEXT = 'Zobacz film';
 export const EVENT_MEDIA_VIEW_TOGGLE_TO_PHOTO_TEXT = 'Zobacz zdjęcie';
@@ -60,7 +60,11 @@ export const EventMediaView = ({ media }: { media: ApiEventMedia }): JSX.Element
 
     return (
         <MediaWrap>
-            {currentFav ? <FavoriteBadge /> : null}
+            <MediaBadges
+                showFavorite={currentFav}
+                showPlaceMismatch={Boolean(media?.place_mismatch)}
+                isPhoto={showPhoto}
+            />
             {hasVideo && hasPhoto ? (
                 <MediaSwitch onClick={(): void => setShowPhoto(value => !value)}>
                     {showPhoto

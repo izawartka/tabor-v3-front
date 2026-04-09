@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 import styled from 'styled-components';
 import type { ApiMergedEvent } from '../../types/api';
-import { EventMediaView } from './EventMediaView';
+import { EventMediaView } from '../EventMediaView/EventMediaView';
 import { EventProperty } from './EventProperty';
 import { SubEventView } from './SubEventView';
 import { getTimeRefData } from './utils/getTimeRefData';
