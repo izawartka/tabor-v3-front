@@ -4,17 +4,23 @@ import { ReferenceTooltip } from '../common/ReferenceTooltip';
 import type { ApiReference } from '../../types/api';
 import { Link } from 'react-router-dom';
 
-const Item = styled.div<{ $isReference: boolean }>`
+const StyledItemBorder = styled.div<{ $isReference: boolean }>`
     border: 1px solid ${({ theme }): string => theme.colors.border};
     border-radius: ${({ theme }): string => theme.radii.md};
-    padding: 8px 10px;
     background: ${({ theme, $isReference }): string =>
         $isReference ? theme.colors.accentSoft : theme.colors.surface};
 `;
 
-const StyledLink = styled(Link)`
-    text-decoration: none;
+const StyledItem = styled.div`
+    padding: 8px 10px;
+    height: stretch;
+`;
+
+const StyledLinkItem = styled(Link)`
     display: block;
+    padding: 8px 10px;
+    text-decoration: none;
+    height: stretch;
 `;
 
 const Label = styled.div`
@@ -52,21 +58,23 @@ export const HeaderProperty = ({
 
     if (!reference) {
         return (
-            <Item $isReference={false}>
-                <Label>{label}</Label>
-                <Value>{value}</Value>
-            </Item>
+            <StyledItemBorder $isReference={false}>
+                <StyledItem>
+                    <Label>{label}</Label>
+                    <Value>{value}</Value>
+                </StyledItem>
+            </StyledItemBorder>
         );
     }
 
     return (
-        <ReferenceTooltip reference={reference.ref} hintText={reference.refText}>
-            <StyledLink to={reference.href}>
-                <Item $isReference={true}>
+        <StyledItemBorder $isReference={true}>
+            <ReferenceTooltip reference={reference.ref} hintText={reference.refText}>
+                <StyledLinkItem to={reference.href}>
                     <Label>{label}</Label>
                     <Value>{value}</Value>
-                </Item>
-            </StyledLink>
-        </ReferenceTooltip>
+                </StyledLinkItem>
+            </ReferenceTooltip>
+        </StyledItemBorder>
     );
 };

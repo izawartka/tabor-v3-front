@@ -79,7 +79,6 @@ const Item = styled(Link)<{ $active: boolean }>`
 
     @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
         padding: 6px 10px;
-        font-size: 0.9rem;
     }
 `;
 

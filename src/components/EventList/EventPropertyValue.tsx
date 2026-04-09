@@ -4,9 +4,8 @@ import { ReferenceTooltip } from '../common/ReferenceTooltip';
 import type { ApiReference } from '../../types/api';
 import { Link } from 'react-router-dom';
 
-const Value = styled.div<{ $isRef: boolean }>`
-    background: ${({ theme, $isRef }): string =>
-        $isRef ? theme.colors.accentSoft : theme.colors.surfaceAlt};
+const StyledValue = styled.div`
+    background: ${({ theme }): string => theme.colors.surfaceAlt};
     padding: 1px 10px;
     border-radius: 12px;
     font-weight: 600;
@@ -16,7 +15,20 @@ const Value = styled.div<{ $isRef: boolean }>`
     gap: 6px;
 `;
 
-const RefEventCount = styled.span`
+const StyledLinkValue = styled(Link)`
+    background: ${({ theme }): string => theme.colors.accentSoft};
+    padding: 1px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    line-height: 1.35;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    text-decoration: none;
+`;
+
+const StyledRefEventCount = styled.span`
     font-size: 0.7em;
     color: ${({ theme }): string => theme.colors.muted};
 `;
@@ -34,20 +46,18 @@ export interface EventPropertyValueProps {
 
 export const EventPropertyValue = ({ text, refData }: EventPropertyValueProps): JSX.Element => {
     if (!text) {
-        return <Value $isRef={false}>-</Value>;
+        return <StyledValue>-</StyledValue>;
     }
 
     if (!refData) {
-        return <Value $isRef={false}>{text}</Value>;
+        return <StyledValue>{text}</StyledValue>;
     }
 
     return (
         <ReferenceTooltip reference={refData.ref} hintText={refData.refText}>
-            <Link to={refData.href}>
-                <Value $isRef={true}>
-                    {text} <RefEventCount>({refData.ref.event_count})</RefEventCount>
-                </Value>
-            </Link>
+            <StyledLinkValue to={refData.href}>
+                {text} <StyledRefEventCount>({refData.ref.event_count})</StyledRefEventCount>
+            </StyledLinkValue>
         </ReferenceTooltip>
     );
 };

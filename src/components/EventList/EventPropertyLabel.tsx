@@ -10,15 +10,8 @@ const StyledCont = styled.div`
 
 const StyledLabel = styled.div`
     color: ${({ theme }): string => theme.colors.text};
-    flex: 0;
     padding-top: 1px;
-`;
-
-const StyledContent = styled.div`
-    flex: 1;
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
+    flex: 0 0 auto;
 `;
 
 export interface EventPropertyLabelProps {
@@ -37,7 +30,7 @@ export const EventPropertyLabel = ({
             <StyledLabel>
                 {tooltip ? <TextWithTooltip text={text} tooltipContent={tooltip} /> : text}
             </StyledLabel>
-            <StyledContent>{children}</StyledContent>
+            {children}
         </StyledCont>
     );
 };

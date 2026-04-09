@@ -23,7 +23,6 @@ const ToggleButton = styled.button`
         justify-self: end;
         width: 32px;
         height: 32px;
-        font-size: 0.9rem;
     }
 `;
 

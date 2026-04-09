@@ -31,4 +31,10 @@ export const GlobalStyles = createGlobalStyle`
     color: inherit;
     text-decoration: none;
   }
+
+  @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
+    body {
+      font-size: 0.9rem;
+    }
+  }
 `;
