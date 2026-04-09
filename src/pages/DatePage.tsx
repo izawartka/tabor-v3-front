@@ -19,6 +19,7 @@ export const DATE_PAGE_LOADING_TEXT = 'Ładowanie danych o dacie...';
 export const DATE_PAGE_ERROR_TEXT = 'Nie udało się załadować danych.';
 export const DATE_PAGE_GROUP_LABEL = 'Rok';
 export const DATE_PAGE_GROUP_REF_TEXT = 'Zobacz wszystkie daty z tego roku';
+export const DATE_COMMON_PRIVATE_INFO_LABEL = 'Notatka osobista';
 export const DATE_PAGE_EVENT_COUNT_LABEL = 'Liczba wpisów';
 export const DATE_PAGE_EMPTY_TEXT = 'Brak wpisów dla tej daty.';
 export const DATE_PAGE_INLINE_LOADING_TEXT = 'Ładowanie kolejnych wpisów...';
@@ -65,6 +66,13 @@ export const DatePage = (): JSX.Element => {
         return <ErrorState message={initialError ?? DATE_PAGE_ERROR_TEXT} onRetry={reload} />;
     }
 
+    const commonPrivateInfoProperty = meta.date_info.common_private_info
+        ? {
+              label: DATE_COMMON_PRIVATE_INFO_LABEL,
+              value: meta.date_info.common_private_info
+          }
+        : null;
+
     return (
         <>
             <HeaderPanel
@@ -83,6 +91,7 @@ export const DatePage = (): JSX.Element => {
                               }
                             : {})
                     },
+                    ...(commonPrivateInfoProperty ? [commonPrivateInfoProperty] : []),
                     {
                         label: DATE_PAGE_EVENT_COUNT_LABEL,
                         value: meta.event_list_info.event_count
