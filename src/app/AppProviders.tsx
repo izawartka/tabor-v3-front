@@ -1,6 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { ColorSchemeProvider } from '../contexts/ColorSchemeProvider';
+import { PrivateModeProvider } from '../contexts/PrivateModeProvider';
 import { RefreshTimestampProvider } from '../contexts/RefreshTimestampContext';
 import { useColorScheme } from '../contexts/useColorScheme';
 import { GlobalStyles } from '../styles/GlobalStyles';
@@ -24,6 +25,8 @@ const ThemedApp = ({ children }: { children: React.ReactNode }): JSX.Element => 
 
 export const AppProviders = ({ children }: { children: React.ReactNode }): JSX.Element => (
     <ColorSchemeProvider>
-        <ThemedApp>{children}</ThemedApp>
+        <PrivateModeProvider>
+            <ThemedApp>{children}</ThemedApp>
+        </PrivateModeProvider>
     </ColorSchemeProvider>
 );

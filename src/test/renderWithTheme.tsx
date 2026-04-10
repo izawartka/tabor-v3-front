@@ -4,16 +4,22 @@ import type { ReactElement } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { ColorSchemeContext } from '../contexts/colorSchemeStore';
+import { PrivateModeContext } from '../contexts/privateModeStore';
 import { darkTheme } from '../styles/theme';
 
 export const TEST_DEFAULT_ROUTE = '/';
 export const TEST_DEFAULT_SCHEME = 'dark';
+export const TEST_DEFAULT_PRIVATE_MODE = false;
 
 export const renderWithTheme = (ui: ReactElement, route = TEST_DEFAULT_ROUTE): RenderResult =>
     render(
         <ColorSchemeContext.Provider value={{ scheme: TEST_DEFAULT_SCHEME, toggleScheme: vi.fn() }}>
-            <ThemeProvider theme={darkTheme}>
-                <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
-            </ThemeProvider>
+            <PrivateModeContext.Provider
+                value={{ privateMode: TEST_DEFAULT_PRIVATE_MODE, togglePrivateMode: vi.fn() }}
+            >
+                <ThemeProvider theme={darkTheme}>
+                    <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
+                </ThemeProvider>
+            </PrivateModeContext.Provider>
         </ColorSchemeContext.Provider>
     );
