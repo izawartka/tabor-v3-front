@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { TOP_NAV_LABEL, TOP_NAV_TABS, TOP_NAV_ARIA_LABEL } from './TopNav.constants';
 import { SchemeToggle } from './SchemeToggle';
+import { PrivateModeToggle } from './PrivateModeToggle';
 
 const Header = styled.header`
     background: ${({ theme }): string => theme.colors.surface};
@@ -66,6 +67,17 @@ const Spacer = styled.div`
     }
 `;
 
+const Toggles = styled.div`
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
+        grid-column: 2 / 3;
+        justify-self: end;
+    }
+`;
+
 const Item = styled(Link)<{ $active: boolean }>`
     padding: 8px 12px;
     border-radius: 999px;
@@ -109,7 +121,10 @@ export const TopNav = (): JSX.Element => {
                     })}
                 </Items>
                 <Spacer />
-                <SchemeToggle />
+                <Toggles>
+                    <PrivateModeToggle />
+                    <SchemeToggle />
+                </Toggles>
             </Inner>
         </Header>
     );
