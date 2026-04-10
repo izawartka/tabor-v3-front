@@ -10,8 +10,19 @@ import {
 import { renderWithTheme } from '../../../test/renderWithTheme';
 import { createEventPlace, createReference, createSubevent } from '../../../test/factories/api';
 
+vi.mock('../../../contexts/usePrivateMode', () => ({
+    usePrivateMode: vi.fn(() => ({ privateMode: false, togglePrivateMode: vi.fn() }))
+}));
+
+import { usePrivateMode } from '../../../contexts/usePrivateMode';
+
 describe('SubEventView', (): void => {
     it('renders key event properties', (): void => {
+        vi.mocked(usePrivateMode).mockReturnValue({
+            privateMode: false,
+            togglePrivateMode: vi.fn()
+        });
+
         renderWithTheme(
             <SubEventView
                 subEvent={createSubevent({
@@ -33,6 +44,11 @@ describe('SubEventView', (): void => {
     });
 
     it('falls back for empty composition', (): void => {
+        vi.mocked(usePrivateMode).mockReturnValue({
+            privateMode: false,
+            togglePrivateMode: vi.fn()
+        });
+
         renderWithTheme(<SubEventView subEvent={createSubevent({ composition: '' })} />);
 
         expect(screen.getByText(EVENT_ITEM_COMPOSITION_LABEL)).toBeInTheDocument();
@@ -40,6 +56,11 @@ describe('SubEventView', (): void => {
     });
 
     it('renders loco reference link when loco_ref is present', (): void => {
+        vi.mocked(usePrivateMode).mockReturnValue({
+            privateMode: false,
+            togglePrivateMode: vi.fn()
+        });
+
         renderWithTheme(
             <SubEventView
                 subEvent={createSubevent({
@@ -60,6 +81,11 @@ describe('SubEventView', (): void => {
     });
 
     it('renders multiple places with separator', (): void => {
+        vi.mocked(usePrivateMode).mockReturnValue({
+            privateMode: false,
+            togglePrivateMode: vi.fn()
+        });
+
         const { container } = renderWithTheme(
             <SubEventView
                 subEvent={createSubevent({
@@ -76,6 +102,11 @@ describe('SubEventView', (): void => {
     });
 
     it('hides invalid optional fields', (): void => {
+        vi.mocked(usePrivateMode).mockReturnValue({
+            privateMode: true,
+            togglePrivateMode: vi.fn()
+        });
+
         renderWithTheme(
             <SubEventView
                 subEvent={createSubevent({
@@ -91,5 +122,41 @@ describe('SubEventView', (): void => {
         expect(screen.queryByText('Pociąg')).not.toBeInTheDocument();
         expect(screen.queryByText('Info')).not.toBeInTheDocument();
         expect(screen.queryByText('Notatka osobista')).not.toBeInTheDocument();
+    });
+
+    it('hides private note when private mode is disabled', (): void => {
+        vi.mocked(usePrivateMode).mockReturnValue({
+            privateMode: false,
+            togglePrivateMode: vi.fn()
+        });
+
+        renderWithTheme(
+            <SubEventView
+                subEvent={createSubevent({
+                    private_info: 'sekretna notatka'
+                })}
+            />
+        );
+
+        expect(screen.queryByText('Notatka osobista')).not.toBeInTheDocument();
+        expect(screen.queryByText('sekretna notatka')).not.toBeInTheDocument();
+    });
+
+    it('renders private note when private mode is enabled', (): void => {
+        vi.mocked(usePrivateMode).mockReturnValue({
+            privateMode: true,
+            togglePrivateMode: vi.fn()
+        });
+
+        renderWithTheme(
+            <SubEventView
+                subEvent={createSubevent({
+                    private_info: 'sekretna notatka'
+                })}
+            />
+        );
+
+        expect(screen.getByText('Notatka osobista')).toBeInTheDocument();
+        expect(screen.getByText('sekretna notatka')).toBeInTheDocument();
     });
 });

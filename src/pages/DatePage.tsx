@@ -9,6 +9,7 @@ import {
 import { EventList } from '../components/EventList/EventList';
 import { HeaderPanel } from '../components/HeaderPanel/HeaderPanel';
 import { useRefreshTimestamp } from '../contexts/useRefreshTimestamp';
+import { usePrivateMode } from '../contexts/usePrivateMode';
 import { usePaginatedData } from '../hooks/data/usePaginatedData';
 import { useInfiniteScroll } from '../hooks/scroll/useInfiniteScroll';
 import type { ApiDateResponse, ApiDateResponseMeta, ApiMergedEvent } from '../types/api';
@@ -27,6 +28,7 @@ export const DATE_PAGE_INLINE_LOADING_TEXT = 'Ładowanie kolejnych wpisów...';
 export const DatePage = (): JSX.Element => {
     const { date = '' } = useParams();
     const { refreshTimestamp } = useRefreshTimestamp();
+    const { privateMode } = usePrivateMode();
 
     const canLoad = Boolean(refreshTimestamp && date);
 
@@ -66,12 +68,13 @@ export const DatePage = (): JSX.Element => {
         return <ErrorState message={initialError ?? DATE_PAGE_ERROR_TEXT} onRetry={reload} />;
     }
 
-    const commonPrivateInfoProperty = meta.date_info.common_private_info
-        ? {
-              label: DATE_COMMON_PRIVATE_INFO_LABEL,
-              value: meta.date_info.common_private_info
-          }
-        : null;
+    const commonPrivateInfoProperty =
+        privateMode && meta.date_info.common_private_info
+            ? {
+                  label: DATE_COMMON_PRIVATE_INFO_LABEL,
+                  value: meta.date_info.common_private_info
+              }
+            : null;
 
     return (
         <>

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import type { ApiSubevent } from '../../types/api';
 import { EventMultiValueProperty } from './EventMultiValueProperty';
 import { EventProperty } from './EventProperty';
+import { usePrivateMode } from '../../contexts/usePrivateMode';
 import { getLocoRefData } from './utils/getLocoRefData';
 import { EVENT_ITEM_PLACE_SEPARATOR, getPlacePropertyValue } from './utils/getPlacePropertyValue';
 
@@ -30,6 +31,8 @@ const SubEventBox = styled.div`
 `;
 
 export const SubEventView = ({ subEvent }: { subEvent: ApiSubevent }): JSX.Element => {
+    const { privateMode } = usePrivateMode();
+
     const placeValues =
         subEvent.places && subEvent.places.length > 0
             ? subEvent.places.map(place => getPlacePropertyValue(place))
@@ -73,10 +76,12 @@ export const SubEventView = ({ subEvent }: { subEvent: ApiSubevent }): JSX.Eleme
                     label={{ text: EVENT_ITEM_INFO_LABEL }}
                     value={{ text: subEvent.info }}
                 />
-                <EventProperty
-                    label={{ text: EVENT_ITEM_PRIVATE_NOTE_LABEL }}
-                    value={{ text: subEvent.private_info }}
-                />
+                {privateMode ? (
+                    <EventProperty
+                        label={{ text: EVENT_ITEM_PRIVATE_NOTE_LABEL }}
+                        value={{ text: subEvent.private_info }}
+                    />
+                ) : null}
             </Properties>
         </SubEventBox>
     );
