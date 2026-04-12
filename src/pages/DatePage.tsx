@@ -13,7 +13,7 @@ import { usePrivateMode } from '../contexts/usePrivateMode';
 import { usePaginatedData } from '../hooks/data/usePaginatedData';
 import { useInfiniteScroll } from '../hooks/scroll/useInfiniteScroll';
 import type { ApiDateResponse, ApiDateResponseMeta, ApiMergedEvent } from '../types/api';
-import { loadDatePage } from '../services/apiService';
+import { isDatePageCached, loadDatePage } from '../services/apiService';
 import { useCallback } from 'react';
 
 export const DATE_PAGE_LOADING_TEXT = 'Ładowanie danych o dacie...';
@@ -38,6 +38,11 @@ export const DatePage = (): JSX.Element => {
         [date, refreshTimestamp]
     );
 
+    const isPageCached = useCallback(
+        (page: number): boolean => isDatePageCached(date, page, refreshTimestamp ?? ''),
+        [date, refreshTimestamp]
+    );
+
     const {
         meta,
         items,
@@ -50,7 +55,8 @@ export const DatePage = (): JSX.Element => {
         reload
     } = usePaginatedData<ApiMergedEvent, ApiDateResponseMeta>({
         enabled: canLoad,
-        loader
+        loader,
+        isPageCached
     });
 
     const anchorRef = useInfiniteScroll({

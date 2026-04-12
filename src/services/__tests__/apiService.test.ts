@@ -1,5 +1,9 @@
 import { clearCache } from '../cacheService';
 import {
+    isDatePageCached,
+    isFavPageCached,
+    isLocoPageCached,
+    isPlacePageCached,
     loadDatePage,
     loadFavPage,
     loadLocoPage,
@@ -552,6 +556,25 @@ describe('apiService', (): void => {
             await loadTypes('123');
 
             expect(httpService.fetchJson).toHaveBeenCalledTimes(1);
+        });
+
+        it('reports cached state for paginated page helpers', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValue({ items: [] } as never);
+
+            expect(isLocoPageCached('1988cf65', 1, '123')).toBe(false);
+            expect(isDatePageCached('2025.01.02', 2, '123')).toBe(false);
+            expect(isPlacePageCached('katowice', 3, '123')).toBe(false);
+            expect(isFavPageCached(4, '123')).toBe(false);
+
+            await loadLocoPage('1988cf65', 1, '123');
+            await loadDatePage('2025.01.02', 2, '123');
+            await loadPlacePage('katowice', 3, '123');
+            await loadFavPage(4, '123');
+
+            expect(isLocoPageCached('1988cf65', 1, '123')).toBe(true);
+            expect(isDatePageCached('2025.01.02', 2, '123')).toBe(true);
+            expect(isPlacePageCached('katowice', 3, '123')).toBe(true);
+            expect(isFavPageCached(4, '123')).toBe(true);
         });
     });
 });

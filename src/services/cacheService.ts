@@ -79,3 +79,5 @@ export const clearCache = (): void => {
     jsonCache.clear();
     jsonInFlight.clear();
 };
+
+export const hasCachedJson = (url: string): boolean => jsonCache.has(url);

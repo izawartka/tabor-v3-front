@@ -12,7 +12,7 @@ import { useRefreshTimestamp } from '../contexts/useRefreshTimestamp';
 import { usePaginatedData } from '../hooks/data/usePaginatedData';
 import { useInfiniteScroll } from '../hooks/scroll/useInfiniteScroll';
 import type { ApiPlaceResponse, ApiPlaceResponseMeta, ApiMergedEvent } from '../types/api';
-import { loadPlacePage } from '../services/apiService';
+import { isPlacePageCached, loadPlacePage } from '../services/apiService';
 import { useCallback } from 'react';
 
 export const PLACE_PAGE_LOADING_TEXT = 'Ładowanie danych o miejscu...';
@@ -33,6 +33,11 @@ export const PlacePage = (): JSX.Element => {
         [id, refreshTimestamp]
     );
 
+    const isPageCached = useCallback(
+        (page: number): boolean => isPlacePageCached(id, page, refreshTimestamp ?? ''),
+        [id, refreshTimestamp]
+    );
+
     const {
         meta,
         items,
@@ -45,7 +50,8 @@ export const PlacePage = (): JSX.Element => {
         reload
     } = usePaginatedData<ApiMergedEvent, ApiPlaceResponseMeta>({
         enabled: canLoad,
-        loader
+        loader,
+        isPageCached
     });
 
     const anchorRef = useInfiniteScroll({

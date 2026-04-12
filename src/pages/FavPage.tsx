@@ -11,7 +11,7 @@ import { useRefreshTimestamp } from '../contexts/useRefreshTimestamp';
 import { usePaginatedData } from '../hooks/data/usePaginatedData';
 import { useInfiniteScroll } from '../hooks/scroll/useInfiniteScroll';
 import type { ApiFavResponse, ApiFavResponseMeta, ApiMergedEvent } from '../types/api';
-import { loadFavPage } from '../services/apiService';
+import { isFavPageCached, loadFavPage } from '../services/apiService';
 import { useCallback } from 'react';
 
 export const FAV_PAGE_LOADING_TEXT = 'Ładowanie danych o wpisach...';
@@ -31,6 +31,11 @@ export const FavPage = (): JSX.Element => {
         [refreshTimestamp]
     );
 
+    const isPageCached = useCallback(
+        (page: number): boolean => isFavPageCached(page, refreshTimestamp ?? ''),
+        [refreshTimestamp]
+    );
+
     const {
         meta,
         items,
@@ -43,7 +48,8 @@ export const FavPage = (): JSX.Element => {
         reload
     } = usePaginatedData<ApiMergedEvent, ApiFavResponseMeta>({
         enabled: canLoad,
-        loader
+        loader,
+        isPageCached
     });
 
     const anchorRef = useInfiniteScroll({

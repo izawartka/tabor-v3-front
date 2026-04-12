@@ -12,7 +12,7 @@ import { useRefreshTimestamp } from '../contexts/useRefreshTimestamp';
 import { usePaginatedData } from '../hooks/data/usePaginatedData';
 import { useInfiniteScroll } from '../hooks/scroll/useInfiniteScroll';
 import type { ApiLocoResponse, ApiLocoResponseMeta, ApiMergedEvent } from '../types/api';
-import { loadLocoPage } from '../services/apiService';
+import { isLocoPageCached, loadLocoPage } from '../services/apiService';
 import { useCallback } from 'react';
 
 export const LOCO_PAGE_LOADING_TEXT = 'Ładowanie danych o pojeździe...';
@@ -36,6 +36,11 @@ export const LocoPage = (): JSX.Element => {
         [id, refreshTimestamp]
     );
 
+    const isPageCached = useCallback(
+        (page: number): boolean => isLocoPageCached(id, page, refreshTimestamp ?? ''),
+        [id, refreshTimestamp]
+    );
+
     const {
         meta,
         items,
@@ -48,7 +53,8 @@ export const LocoPage = (): JSX.Element => {
         reload
     } = usePaginatedData<ApiMergedEvent, ApiLocoResponseMeta>({
         enabled: canLoad,
-        loader
+        loader,
+        isPageCached
     });
 
     const anchorRef = useInfiniteScroll({

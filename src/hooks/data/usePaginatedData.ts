@@ -9,6 +9,7 @@ import { ApiError, HTTP_ERROR_GENERIC_MESSAGE } from '../../services/httpService
 export interface UsePaginatedDataOptions<ItemT, MetaT> {
     enabled: boolean;
     loader: (page: number, signal?: AbortSignal) => Promise<ApiPaginatedResponse<ItemT, MetaT>>;
+    isPageCached?: (page: number) => boolean;
 }
 
 export interface UsePaginatedDataResult<ItemT, MetaT> {
@@ -33,7 +34,8 @@ const toErrorMessage = (error: unknown): string => {
 
 export const usePaginatedData = <ItemT, MetaT>({
     enabled,
-    loader
+    loader,
+    isPageCached
 }: UsePaginatedDataOptions<ItemT, MetaT>): UsePaginatedDataResult<ItemT, MetaT> => {
     const [meta, setMeta] = useState<MetaT | null>(null);
     const [paginationInfo, setPaginationInfo] = useState<ApiPaginationInfo | null>(null);
@@ -89,12 +91,32 @@ export const usePaginatedData = <ItemT, MetaT>({
                     >;
                     setMeta(firstPageResponse.meta);
                     setPaginationInfo(firstPageResponse.pagination_info);
-                    setItems(response.items);
+
+                    const pageCount = firstPageResponse.pagination_info.page_count;
+                    let lastLoadedPage = 0;
+                    let mergedItems = response.items;
+
+                    for (let nextPage = 1; nextPage < pageCount; nextPage += 1) {
+                        if (!isPageCached?.(nextPage)) {
+                            break;
+                        }
+
+                        const cachedPageResponse = await loader(nextPage, controller.signal);
+
+                        if (controller.signal.aborted || requestId !== requestIdRef.current) {
+                            return;
+                        }
+
+                        mergedItems = [...mergedItems, ...cachedPageResponse.items];
+                        lastLoadedPage = nextPage;
+                    }
+
+                    setItems(mergedItems);
+                    setPage(lastLoadedPage);
                 } else {
                     setItems(current => [...current, ...response.items]);
+                    setPage(targetPage);
                 }
-
-                setPage(targetPage);
             } catch (error) {
                 if (controller.signal.aborted || requestId !== requestIdRef.current) {
                     return;
@@ -118,7 +140,7 @@ export const usePaginatedData = <ItemT, MetaT>({
                 }
             }
         },
-        [loader]
+        [isPageCached, loader]
     );
 
     useEffect((): (() => void) | undefined => {

@@ -12,7 +12,7 @@ import type {
     ApiYearResponse,
     ApiYearsResponse
 } from '../types/api';
-import { loadCachedJson } from './cacheService';
+import { hasCachedJson, loadCachedJson } from './cacheService';
 
 export const loadRefreshTimestamp = async (signal?: AbortSignal): Promise<string> => {
     const value = await fetchText(getRefreshTimestampUrl(), { signal, cache: 'no-store' });
@@ -49,6 +49,18 @@ export const loadLocoPage = (
     );
 };
 
+export const isLocoPageCached = (
+    locoId: string,
+    page: number,
+    refreshTimestamp: string
+): boolean => {
+    const suffix = page === 0 ? '' : `_page_${page}`;
+
+    return hasCachedJson(
+        getStaticJsonUrl(`loco/${encodeURIComponent(locoId)}${suffix}.json`, refreshTimestamp)
+    );
+};
+
 export const loadYears = (
     refreshTimestamp: string,
     signal?: AbortSignal
@@ -79,6 +91,14 @@ export const loadDatePage = (
     );
 };
 
+export const isDatePageCached = (date: string, page: number, refreshTimestamp: string): boolean => {
+    const suffix = page === 0 ? '' : `_page_${page}`;
+
+    return hasCachedJson(
+        getStaticJsonUrl(`date/${encodeURIComponent(date)}${suffix}.json`, refreshTimestamp)
+    );
+};
+
 export const loadPlaces = (
     refreshTimestamp: string,
     signal?: AbortSignal
@@ -99,6 +119,18 @@ export const loadPlacePage = (
     );
 };
 
+export const isPlacePageCached = (
+    placeId: string,
+    page: number,
+    refreshTimestamp: string
+): boolean => {
+    const suffix = page === 0 ? '' : `_page_${page}`;
+
+    return hasCachedJson(
+        getStaticJsonUrl(`place/${encodeURIComponent(placeId)}${suffix}.json`, refreshTimestamp)
+    );
+};
+
 export const loadFavPage = (
     page: number,
     refreshTimestamp: string,
@@ -110,6 +142,12 @@ export const loadFavPage = (
         getStaticJsonUrl(`fav_events${suffix}.json`, refreshTimestamp),
         signal
     );
+};
+
+export const isFavPageCached = (page: number, refreshTimestamp: string): boolean => {
+    const suffix = page === 0 ? '' : `_page_${page}`;
+
+    return hasCachedJson(getStaticJsonUrl(`fav_events${suffix}.json`, refreshTimestamp));
 };
 
 export const searchEventGroups = (
