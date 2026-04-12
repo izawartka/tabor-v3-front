@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 import styled from 'styled-components';
 import { ReferenceTooltip } from '../common/ReferenceTooltip';
 import type { ApiReference } from '../../types/api';
-import { Link } from 'react-router-dom';
+import { PrefetchedLink } from '../common/PrefetchedLink';
 
 const StyledValue = styled.div`
     background: ${({ theme }): string => theme.colors.surfaceAlt};
@@ -15,7 +15,7 @@ const StyledValue = styled.div`
     gap: 6px;
 `;
 
-const StyledLinkValue = styled(Link)`
+const StyledLinkValue = styled(PrefetchedLink)`
     background: ${({ theme }): string => theme.colors.accentSoft};
     padding: 1px 10px;
     border-radius: 12px;

@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 import styled from 'styled-components';
 import { ReferenceTooltip } from '../common/ReferenceTooltip';
 import type { ApiReference } from '../../types/api';
-import { Link } from 'react-router-dom';
+import { PrefetchedLink } from '../common/PrefetchedLink';
 
 const StyledItemBorder = styled.div<{ $isReference: boolean }>`
     border: 1px solid ${({ theme }): string => theme.colors.border};
@@ -16,7 +16,7 @@ const StyledItem = styled.div`
     height: stretch;
 `;
 
-const StyledLinkItem = styled(Link)`
+const StyledLinkItem = styled(PrefetchedLink)`
     display: block;
     padding: 8px 10px;
     text-decoration: none;

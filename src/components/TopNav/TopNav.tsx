@@ -1,9 +1,10 @@
 import type { JSX } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { TOP_NAV_LABEL, TOP_NAV_TABS, TOP_NAV_ARIA_LABEL } from './TopNav.constants';
 import { SchemeToggle } from './SchemeToggle';
 import { PrivateModeToggle } from './PrivateModeToggle';
+import { PrefetchedLink } from '../common/PrefetchedLink';
 
 const Header = styled.header`
     background: ${({ theme }): string => theme.colors.surface};
@@ -78,7 +79,7 @@ const Toggles = styled.div`
     }
 `;
 
-const Item = styled(Link)<{ $active: boolean }>`
+const Item = styled(PrefetchedLink)<{ $active: boolean }>`
     padding: 8px 12px;
     border-radius: 999px;
     border: 1px solid ${({ theme }): string => theme.colors.border};

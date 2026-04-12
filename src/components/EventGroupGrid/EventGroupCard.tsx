@@ -1,12 +1,12 @@
 import type { JSX } from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import type { ApiEventGroup } from '../../types/api';
 import { ProgressivePhoto } from '../common/ProgressivePhoto';
+import { PrefetchedLink } from '../common/PrefetchedLink';
 
 export const EVENT_GROUP_CARD_EVENT_COUNT_PREFIX = 'Liczba wpisów: ';
 
-const Card = styled(Link)`
+const Card = styled(PrefetchedLink)`
     display: flex;
     flex-direction: column;
     gap: 10px;
