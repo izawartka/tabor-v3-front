@@ -7,6 +7,7 @@ import { useColorScheme } from '../contexts/useColorScheme';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { darkTheme, lightTheme } from '../styles/theme';
 import type { JSX } from 'react';
+import { ScrollRestorationGate } from './ScrollRestorationGate';
 
 const ThemedApp = ({ children }: { children: React.ReactNode }): JSX.Element => {
     const { scheme } = useColorScheme();
@@ -17,6 +18,7 @@ const ThemedApp = ({ children }: { children: React.ReactNode }): JSX.Element => 
         <ThemeProvider theme={activeTheme}>
             <GlobalStyles />
             <BrowserRouter basename={routerBasename}>
+                <ScrollRestorationGate />
                 <RefreshTimestampProvider>{children}</RefreshTimestampProvider>
             </BrowserRouter>
         </ThemeProvider>
