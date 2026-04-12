@@ -1,3 +1,4 @@
+import { clearCache } from '../cacheService';
 import {
     loadDatePage,
     loadFavPage,
@@ -24,6 +25,7 @@ vi.mock('../httpService', () => ({
 describe('apiService', (): void => {
     beforeEach((): void => {
         vi.clearAllMocks();
+        clearCache();
     });
 
     describe('loadRefreshTimestamp', (): void => {
@@ -519,6 +521,37 @@ describe('apiService', (): void => {
             const calls = vi.mocked(httpService.fetchJson).mock.calls.map(call => call[0]);
             expect(calls[0]).toContain('fav_events.json?refresh=123');
             expect(calls[1]).toContain('fav_events_page_2.json?refresh=123');
+        });
+
+        it('reuses cached response for repeated requests with same URL', async (): Promise<void> => {
+            vi.mocked(httpService.fetchJson).mockResolvedValue({ event_groups: [] } as never);
+
+            await loadTypes('123');
+            await loadTypes('123');
+
+            expect(httpService.fetchJson).toHaveBeenCalledTimes(1);
+        });
+
+        it('shares in-flight prefetch and supports abortable consumer', async (): Promise<void> => {
+            let resolveFetch!: (value: unknown) => void;
+            const fetchPromise = new Promise<unknown>(resolve => {
+                resolveFetch = resolve;
+            });
+
+            vi.mocked(httpService.fetchJson).mockReturnValue(fetchPromise as never);
+
+            void loadTypes('123');
+
+            const controller = new AbortController();
+            const abortable = loadTypes('123', controller.signal);
+            controller.abort();
+
+            await expect(abortable).rejects.toMatchObject({ name: 'AbortError' });
+
+            resolveFetch({ event_groups: [] });
+            await loadTypes('123');
+
+            expect(httpService.fetchJson).toHaveBeenCalledTimes(1);
         });
     });
 });
