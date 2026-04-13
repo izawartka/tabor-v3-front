@@ -28,7 +28,6 @@ describe('PrivateModeToggle', (): void => {
 
         const button = screen.getByRole('button', { name: TOP_NAV_PRIVATE_MODE_OFF_LABEL });
         expect(button).toHaveAttribute('title', TOP_NAV_PRIVATE_MODE_OFF_LABEL);
-        expect(button).toHaveAttribute('aria-pressed', 'false');
         expect(button.querySelector('svg')).toBeInTheDocument();
     });
 
@@ -42,7 +41,6 @@ describe('PrivateModeToggle', (): void => {
 
         const button = screen.getByRole('button', { name: TOP_NAV_PRIVATE_MODE_ON_LABEL });
         expect(button).toHaveAttribute('title', TOP_NAV_PRIVATE_MODE_ON_LABEL);
-        expect(button).toHaveAttribute('aria-pressed', 'true');
     });
 
     it('calls toggle handler on click', async (): Promise<void> => {

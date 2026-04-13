@@ -1,48 +1,31 @@
 import type { JSX } from 'react';
-import styled, { useTheme } from 'styled-components';
+import { useTheme } from 'styled-components';
 import { usePrivateMode } from '../../contexts/usePrivateMode';
 import {
     TOP_NAV_PRIVATE_MODE_OFF_LABEL,
     TOP_NAV_PRIVATE_MODE_ON_LABEL
 } from './PrivateModeToggle.constants';
 import { InfoIcon } from '../../icons/InfoIcon';
+import { TopNavToggle } from './TopNavToggle';
 
-const ToggleButton = styled.button<{ $active: boolean }>`
-    width: 38px;
-    height: 38px;
-    display: inline-grid;
-    place-items: center;
-    border-radius: 999px;
-    border: 1px solid ${({ theme }): string => theme.colors.border};
-    background: ${({ theme, $active }): string =>
-        $active ? theme.colors.accentSoft : theme.colors.surfaceAlt};
-    color: ${({ theme }): string => theme.colors.text};
-    cursor: pointer;
-    font-size: 1rem;
-    text-select: none;
+export interface PrivateModeToggleProps {
+    showLabel?: boolean;
+}
 
-    @media (max-width: ${({ theme }): string => `${theme.breakpoints.mobile}px`}) {
-        grid-column: 2 / 3;
-        justify-self: end;
-        width: 32px;
-        height: 32px;
-    }
-`;
-
-export const PrivateModeToggle = (): JSX.Element => {
+export const PrivateModeToggle = ({ showLabel = false }: PrivateModeToggleProps): JSX.Element => {
     const { privateMode, togglePrivateMode } = usePrivateMode();
     const theme = useTheme();
+    const icon = <InfoIcon color={theme.colors.text} />;
     const label = privateMode ? TOP_NAV_PRIVATE_MODE_ON_LABEL : TOP_NAV_PRIVATE_MODE_OFF_LABEL;
 
     return (
-        <ToggleButton
-            $active={privateMode}
+        <TopNavToggle
+            icon={icon}
             onClick={togglePrivateMode}
-            aria-pressed={privateMode}
-            aria-label={label}
-            title={label}
-        >
-            <InfoIcon color={theme.colors.text} />
-        </ToggleButton>
+            isOn={privateMode}
+            ariaLabel={label}
+            label={label}
+            showLabel={showLabel}
+        />
     );
 };
