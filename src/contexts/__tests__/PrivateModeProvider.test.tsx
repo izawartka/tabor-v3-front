@@ -16,6 +16,10 @@ const Probe = (): JSX.Element => {
 };
 
 describe('PrivateModeProvider', (): void => {
+    beforeEach((): void => {
+        window.localStorage.clear();
+    });
+
     it('toggles and persists private mode', async (): Promise<void> => {
         window.localStorage.removeItem(PRIVATE_MODE_STORAGE_KEY);
 
@@ -33,5 +37,57 @@ describe('PrivateModeProvider', (): void => {
 
         expect(screen.getByText('true')).toBeInTheDocument();
         expect(window.localStorage.getItem(PRIVATE_MODE_STORAGE_KEY)).toBe('1');
+    });
+
+    it('reads enabled private mode from localStorage', (): void => {
+        window.localStorage.setItem(PRIVATE_MODE_STORAGE_KEY, '1');
+
+        render(
+            <PrivateModeProvider>
+                <Probe />
+            </PrivateModeProvider>
+        );
+
+        expect(screen.getByText('true')).toBeInTheDocument();
+    });
+
+    it('reads disabled private mode from localStorage', (): void => {
+        window.localStorage.setItem(PRIVATE_MODE_STORAGE_KEY, '0');
+
+        render(
+            <PrivateModeProvider>
+                <Probe />
+            </PrivateModeProvider>
+        );
+
+        expect(screen.getByText('false')).toBeInTheDocument();
+    });
+
+    it('falls back to default for unexpected localStorage value', (): void => {
+        window.localStorage.setItem(PRIVATE_MODE_STORAGE_KEY, 'invalid');
+
+        render(
+            <PrivateModeProvider>
+                <Probe />
+            </PrivateModeProvider>
+        );
+
+        expect(screen.getByText(String(DEFAULT_PRIVATE_MODE))).toBeInTheDocument();
+    });
+
+    it('toggles twice and persists disabled flag', async (): Promise<void> => {
+        render(
+            <PrivateModeProvider>
+                <Probe />
+            </PrivateModeProvider>
+        );
+
+        await act(async (): Promise<void> => {
+            screen.getByText('toggle').click();
+            screen.getByText('toggle').click();
+        });
+
+        expect(screen.getByText('false')).toBeInTheDocument();
+        expect(window.localStorage.getItem(PRIVATE_MODE_STORAGE_KEY)).toBe('0');
     });
 });

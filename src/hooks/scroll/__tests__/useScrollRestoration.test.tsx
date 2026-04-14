@@ -84,6 +84,25 @@ describe('useScrollRestoration', (): void => {
         expect(window.scrollTo).toHaveBeenCalledWith({ top: 420, left: 0, behavior: 'auto' });
     });
 
+    it('does not restore when POP route has no saved position', (): void => {
+        window.sessionStorage.setItem(SCROLL_STORAGE_KEY, JSON.stringify({ '/years': 420 }));
+        mockUseNavigationType.mockReturnValue('POP');
+
+        render(<Harness />);
+
+        expect(window.scrollTo).not.toHaveBeenCalled();
+    });
+
+    it('handles invalid storage JSON without throwing during POP restore', (): void => {
+        window.sessionStorage.setItem(SCROLL_STORAGE_KEY, '{broken-json');
+        mockUseNavigationType.mockReturnValue('POP');
+
+        expect((): void => {
+            render(<Harness />);
+        }).not.toThrow();
+        expect(window.scrollTo).not.toHaveBeenCalled();
+    });
+
     it('caps restored scroll position to current max top', (): void => {
         Object.defineProperty(document.documentElement, 'scrollHeight', {
             value: 1500,
@@ -111,8 +130,7 @@ describe('useScrollRestoration', (): void => {
     });
 
     it('saves current route position after scroll event', (): void => {
-        let now = 1000;
-        vi.spyOn(Date, 'now').mockImplementation(() => now);
+        vi.spyOn(Date, 'now').mockImplementation(() => 1000);
 
         render(<Harness />);
 
@@ -158,5 +176,22 @@ describe('useScrollRestoration', (): void => {
             window.sessionStorage.getItem(SCROLL_STORAGE_KEY) ?? '{}'
         ) as Record<string, number>;
         expect(parsed['/types']).toBe(333);
+    });
+
+    it('captures popstate and saves current route position', (): void => {
+        render(<Harness />);
+
+        Object.defineProperty(window, 'scrollY', {
+            value: 210,
+            writable: true,
+            configurable: true
+        });
+
+        fireEvent.popState(window);
+
+        const parsed = JSON.parse(
+            window.sessionStorage.getItem(SCROLL_STORAGE_KEY) ?? '{}'
+        ) as Record<string, number>;
+        expect(parsed['/types']).toBe(210);
     });
 });
