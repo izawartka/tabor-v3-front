@@ -6,10 +6,10 @@ import { PrefetchedLink } from '../common/PrefetchedLink';
 
 export const EVENT_GROUP_CARD_EVENT_COUNT_PREFIX = 'Liczba wpisów: ';
 
-const Card = styled(PrefetchedLink)`
+const StyledCard = styled(PrefetchedLink)`
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     background: ${({ theme }): string => theme.colors.surface};
     border: 1px solid ${({ theme }): string => theme.colors.border};
     border-radius: ${({ theme }): string => theme.radii.lg};
@@ -22,13 +22,20 @@ const Card = styled(PrefetchedLink)`
     }
 `;
 
-const Title = styled.h3`
+const StyledDetails = styled.div`
+    padding: 0 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+`;
+
+const StyledTitle = styled.h3`
     font-size: 1rem;
     margin: 0;
     color: ${({ theme }): string => theme.colors.text};
 `;
 
-const Count = styled.p`
+const StyledEventCount = styled.p`
     margin: 0;
     color: ${({ theme }): string => theme.colors.secondaryText};
     font-size: 0.9rem;
@@ -40,12 +47,14 @@ interface EventGroupCardProps {
 }
 
 export const EventGroupCard = ({ eventGroup, to }: EventGroupCardProps): JSX.Element => (
-    <Card to={to} aria-label={`Przejdź do ${eventGroup.display_name}`}>
+    <StyledCard to={to} aria-label={`Przejdź do ${eventGroup.display_name}`}>
         <ProgressivePhoto photoId={eventGroup.thumb} alt={eventGroup.display_name} />
-        <Title>{eventGroup.display_name}</Title>
-        <Count>
-            {EVENT_GROUP_CARD_EVENT_COUNT_PREFIX}
-            {eventGroup.event_count}
-        </Count>
-    </Card>
+        <StyledDetails>
+            <StyledTitle>{eventGroup.display_name}</StyledTitle>
+            <StyledEventCount>
+                {EVENT_GROUP_CARD_EVENT_COUNT_PREFIX}
+                {eventGroup.event_count}
+            </StyledEventCount>
+        </StyledDetails>
+    </StyledCard>
 );

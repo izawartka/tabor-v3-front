@@ -13,7 +13,7 @@ const StyledSearchInput = styled.input`
     border: 1px solid ${({ theme }): string => theme.colors.border};
     background: ${({ theme }): string => theme.colors.surface};
     color: ${({ theme }): string => theme.colors.text};
-    border-radius: ${({ theme }): string => theme.radii.md};
+    border-radius: ${({ theme }): string => theme.radii.lg};
     padding: 12px 14px;
 `;
 

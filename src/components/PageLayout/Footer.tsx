@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const FooterContainer = styled.footer`
     max-width: 1200px;
     margin: 0 auto;
-    padding: 8px 16px 20px;
+    padding: 4px 16px 20px;
     color: ${({ theme }): string => theme.colors.secondaryText};
     font-size: 0.9rem;
 `;

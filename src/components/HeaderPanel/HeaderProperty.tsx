@@ -23,13 +23,13 @@ const StyledLinkItem = styled(PrefetchedLink)`
     height: stretch;
 `;
 
-const Label = styled.div`
+const StyledLabel = styled.div`
     font-size: 0.82rem;
     color: ${({ theme }): string => theme.colors.muted};
     margin-bottom: 4px;
 `;
 
-const Value = styled.div`
+const StyledValue = styled.div`
     color: ${({ theme }): string => theme.colors.text};
     font-weight: 600;
     line-height: 1.35;
@@ -60,8 +60,8 @@ export const HeaderProperty = ({
         return (
             <StyledItemBorder $isReference={false}>
                 <StyledItem>
-                    <Label>{label}</Label>
-                    <Value>{value}</Value>
+                    <StyledLabel>{label}</StyledLabel>
+                    <StyledValue>{value}</StyledValue>
                 </StyledItem>
             </StyledItemBorder>
         );
@@ -71,8 +71,8 @@ export const HeaderProperty = ({
         <StyledItemBorder $isReference={true}>
             <ReferenceTooltip reference={reference.ref} hintText={reference.refText}>
                 <StyledLinkItem to={reference.href}>
-                    <Label>{label}</Label>
-                    <Value>{value}</Value>
+                    <StyledLabel>{label}</StyledLabel>
+                    <StyledValue>{value}</StyledValue>
                 </StyledLinkItem>
             </ReferenceTooltip>
         </StyledItemBorder>
