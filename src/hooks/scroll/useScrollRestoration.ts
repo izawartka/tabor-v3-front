@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
 
-const SCROLL_STORAGE_KEY = 'tabor-v3-front:scroll-positions';
-const RESTORE_TIMEOUT_MS = 4000;
-const SAVE_THROTTLE_MS = 120;
-const NAVIGATION_GUARD_MS = 500;
+export const SCROLL_STORAGE_KEY = 'tabor-v3-front:scroll-positions';
+export const RESTORE_TIMEOUT_MS = 4000;
+export const SAVE_THROTTLE_MS = 120;
+export const NAVIGATION_GUARD_MS = 500;
 
 type ScrollPositions = Record<string, number>;
 
